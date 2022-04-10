@@ -5,11 +5,11 @@ import java.util.Date;
 public class Event {
 	
 	private String idEstado;
-	private Integer idConductor;
-	private Integer idVehiculo;
+	private String idConductor;
+	private String idVehiculo;
 	private Date fecha;
-	private String latitud;
-	private String longitud;
+	private Double latitud;
+	private Double longitud;
 
 	public Event() {}
 	
@@ -21,28 +21,28 @@ public class Event {
 		this.fecha = fecha;
 	}
 
-	public String getLatitud() {
+	public Double getLatitud() {
 		return latitud;
 	}
 
-	public void setLatitud(String latitud) {
+	public void setLatitud(Double latitud) {
 		this.latitud = latitud;
 	}
 
-	public String getLongitud() {
+	public Double getLongitud() {
 		return longitud;
 	}
 
-	public void setLongitud(String longitud) {
+	public void setLongitud(Double longitud) {
 		this.longitud = longitud;
 	}
 
 
-	public Integer getIdVehiculo() {
+	public String getIdVehiculo() {
 		return idVehiculo;
 	}
 
-	public void setIdVehiculo(Integer idVehiculo) {
+	public void setIdVehiculo(String idVehiculo) {
 		this.idVehiculo = idVehiculo;
 	}
 
@@ -55,11 +55,11 @@ public class Event {
 		this.idEstado = idEstado;
 	}
 
-	public Integer getIdConductor() {
+	public String getIdConductor() {
 		return idConductor;
 	}
 
-	public void setIdConductor(Integer idConductor) {
+	public void setIdConductor(String idConductor) {
 		this.idConductor = idConductor;
 	}
 
