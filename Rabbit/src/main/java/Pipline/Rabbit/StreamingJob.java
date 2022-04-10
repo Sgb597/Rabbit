@@ -66,12 +66,12 @@ public class StreamingJob {
 		final DataStreamSource<String> textStream = env.readTextFile(input);
 		
 		final DataStream<String> stream = textStream
-				.name("text_stream");
+				.name("one_vehicle_stream");
 		stream.flatMap(new Parser());
 		stream.print();
 		
 		final DataStream<Tuple2<Event, Integer>> eventStream = stream
-				.name("event_stream");
+				.keyBy(event.getIdVehiculo())
 				.window(GlobalWindows.create());
 		
 		// execute program
