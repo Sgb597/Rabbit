@@ -20,8 +20,12 @@ package Pipline.Rabbit;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
+import org.apache.flink.streaming.api.windowing.evictors.TimeEvictor;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
 
@@ -29,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -65,30 +70,25 @@ public class StreamingJob {
 		
 		final DataStreamSource<String> textStream = env.readTextFile(input);
 		
-		final DataStream<String> stream = textStream
-				.name("one_vehicle_stream");
-		stream.flatMap(new Parser());
-		stream.print();
-		
-		final DataStream<Tuple2<Event, Integer>> eventStream = stream
-				.keyBy(event.getIdVehiculo())
+		final WindowedStream<Tuple2<Event, String>, String, GlobalWindow> eventStream = textStream
+				.flatMap(new Parser())
+				.keyBy(value -> value.f1)
 				.window(GlobalWindows.create());
-		
+				
 		// execute program
 		env.execute("Streaming Job with Windows");
 	}
 	
-	public static final class Parser implements FlatMapFunction<String, Event> {
+	public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void flatMap(String value, Collector<Event> out) throws Exception {
+		public void flatMap(String value, Collector<Tuple2<Event, String>> out) throws Exception {
 			int i = 0;
             Event event = new Event();
-	        for( String col: value.split(",") ){
+	        for(String col: value.split(",")){
                 switch(i){
                     case 2: 
-                    	
                     	try {
 	                		SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 							// Cast String Date to Date 
@@ -150,7 +150,7 @@ public class StreamingJob {
 						break;
                 }
 	        	i++;
-	        	out.collect(event);
+	        	out.collect(new Tuple2<>(event, event.getIdVehiculo()));
 	        }
 		}
 	}
