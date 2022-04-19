@@ -26,6 +26,8 @@ import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
+import org.apache.flink.streaming.api.windowing.triggers.DeltaTrigger;
+import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
 
@@ -36,6 +38,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.shaded.asm7.org.objectweb.asm.tree.analysis.Value;
 import org.apache.flink.util.Collector;
@@ -51,8 +54,7 @@ public class StreamingJob {
         final String password = "guest";
         final String queueName = "historico";
         final int port = 5672;
-        
-        final String input = "/home/sebastian/Documents/TFM/data/historico_one_vehicle_NH.csv";
+        final String input = "/mnt/EventosHistorico_muestra.csv";
 
 		// set up the streaming execution environment
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -70,13 +72,28 @@ public class StreamingJob {
 		
 		final DataStreamSource<String> textStream = env.readTextFile(input);
 		
-		final WindowedStream<Tuple2<Event, String>, String, GlobalWindow> eventStream = textStream
-				.flatMap(new Parser())
+		final DataStream<Tuple2<Event, String>> transformStream = textStream
+				.flatMap(new Parser());
+
+		final WindowedStream<Tuple2<Event, String>, String, GlobalWindow> eventStream = transformStream
 				.keyBy(value -> value.f1)
-				.window(GlobalWindows.create());
-				
+				.window(GlobalWindows.create())
+				.trigger(
+					TramoTrigger.of(
+						new DeltaFunction<Tuple2<Event, String>>(){
+
+							@Override
+							public double getDelta(Tuple2<Event, String> oldDataPoint,
+									Tuple2<Event, String> newDataPoint) {
+								// TODO Auto-generated method stub
+								return 0;
+							}
+						},
+						transformStream.getType().createSerializer(env.getConfig())
+					)
+				);	
 		// execute program
-		env.execute("Streaming Job with Windows");
+		env.execute("Streaming Job with Windows + trigger");
 	}
 	
 	public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {
