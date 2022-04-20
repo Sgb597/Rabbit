@@ -20,11 +20,14 @@ package Pipline.Rabbit;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.evictors.TimeEvictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.windowing.triggers.DeltaTrigger;
 import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
@@ -33,14 +36,10 @@ import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.shaded.asm7.org.objectweb.asm.tree.analysis.Value;
 import org.apache.flink.util.Collector;
 
 public class StreamingJob {
@@ -70,30 +69,18 @@ public class StreamingJob {
 //		    .setPassword(password)
 //		    .build();
 		
-		final DataStreamSource<String> textStream = env.readTextFile(input);
+		DataStreamSource<String> textStream = env.readTextFile(input);
 		
-		final DataStream<Tuple2<Event, String>> transformStream = textStream
+		DataStream<Tuple2<Event, String>> parsedStream = textStream
 				.flatMap(new Parser());
-
-		final WindowedStream<Tuple2<Event, String>, String, GlobalWindow> eventStream = transformStream
+		
+		SingleOutputStreamOperator<Tramo> tramoStream = parsedStream
 				.keyBy(value -> value.f1)
-				.window(GlobalWindows.create())
-				.trigger(
-					TramoTrigger.of(
-						new DeltaFunction<Tuple2<Event, String>>(){
+				.window(TumblingEventTimeWindows.of(Time.seconds(5)))
+				.process(new MyProcessWindowFunction());
+		tramoStream.print();
 
-							@Override
-							public double getDelta(Tuple2<Event, String> oldDataPoint,
-									Tuple2<Event, String> newDataPoint) {
-								// TODO Auto-generated method stub
-								return 0;
-							}
-						},
-						transformStream.getType().createSerializer(env.getConfig())
-					)
-				);	
-		// execute program
-		env.execute("Streaming Job with Windows + trigger");
+		env.execute("Streaming Job ProcessWindowFunction");
 	}
 	
 	public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {

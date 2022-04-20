@@ -1,9 +1,8 @@
 package Pipline.Rabbit;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class Event implements Serializable {
+public class Event {
 	
 	private String idEstado;
 	private String idConductor;
