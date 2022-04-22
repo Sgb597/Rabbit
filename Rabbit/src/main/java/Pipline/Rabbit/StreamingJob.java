@@ -21,6 +21,7 @@ package Pipline.Rabbit;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.evictors.TimeEvictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
@@ -43,121 +44,112 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
 
 public class StreamingJob {
-	
-	public static void main(String[] args) throws Exception {
-		
-		// the host, port, and queue name to connect to
+   
+    public static void main(String[] args) throws Exception {
+       
+        // the host, port, and queue name to connect to
         final String hostname = "localhost";
         final String virtualHost = "/";
         final String userName = "guest";
         final String password = "guest";
         final String queueName = "historico";
         final int port = 5672;
-        final String input = "/mnt/EventosHistorico_muestra.csv";
+        final String input = "/mnt/EventosHistorico_muestra_filtrado.csv";
 
-		// set up the streaming execution environment
-		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-//		
-//		// checkpointing is required for exactly-once or at-least-once guarantees
-//		env.enableCheckpointing(1000);	
+        // set up the streaming execution environment
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//      
+//      // checkpointing is required for exactly-once or at-least-once guarantees
+//      env.enableCheckpointing(1000);  
 //
-//		final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
-//		    .setHost(hostname)
-//		    .setPort(port)
-//		    .setVirtualHost(virtualHost)
-//		    .setUserName(userName)
-//		    .setPassword(password)
-//		    .build();
+//      final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
+//          .setHost(hostname)
+//          .setPort(port)
+//          .setVirtualHost(virtualHost)
+//          .setUserName(userName)
+//          .setPassword(password)
+//          .build();
+       
+        DataStreamSource<String> textStream = env.readTextFile(input);
+		//textStream.print();
+ 
+        DataStream<Tuple2<Event, String>> parsedStream = textStream
+                .flatMap(new Parser());
 		
-		DataStreamSource<String> textStream = env.readTextFile(input);
-		
-		DataStream<Tuple2<Event, String>> parsedStream = textStream
-				.flatMap(new Parser());
-		
-		SingleOutputStreamOperator<Tramo> tramoStream = parsedStream
-				.keyBy(value -> value.f1)
-				.window(TumblingEventTimeWindows.of(Time.seconds(5)))
-				.process(new MyProcessWindowFunction());
-		tramoStream.print();
+		//parsedStream.print();
+        DataStream<Tramo> tramoStream = parsedStream
+                .keyBy(value -> value.f1)
+                .window(TumblingProcessingTimeWindows.of(Time.milliseconds(10)))
+                .process(new MyProcessWindowFunction());
+        tramoStream.print();
 
-		env.execute("Streaming Job ProcessWindowFunction");
-	}
-	
-	public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {
-		private static final long serialVersionUID = 1L;
+        env.execute("Streaming Job ProcessWindowFunction");
+    }
+   
+    public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public void flatMap(String value, Collector<Tuple2<Event, String>> out) throws Exception {
-			int i = 0;
+        @Override
+        public void flatMap(String value, Collector<Tuple2<Event, String>> out) throws Exception {
+            int i = 0;
             Event event = new Event();
-	        for(String col: value.split(",")){
+            for(String col: value.split(",")){
                 switch(i){
                     case 2: 
-                    	try {
-	                		SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-							// Cast String Date to Date 
-							Date date = dateParser.parse(col.replaceAll("\"", ""));
-							event.setFecha(date);
-                    	} catch(ParseException e) {
-                    		e.printStackTrace();
-                    	}
-						break;
+                        try {
+                            SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                            // Cast String Date to Date
+                            Date date = dateParser.parse(col.replaceAll("\"", ""));
+                            event.setFecha(date);
+                        } catch(ParseException e) {
+                            e.printStackTrace();
+                        }
+                        break;
 
-					case 4:
-						try {
-							// Cast String Id to Integer
-							String idVehiculo = col.replaceAll("\"", "");
-							event.setIdVehiculo(idVehiculo);
-						} catch(Exception e) {
-                    		e.printStackTrace();
-                    	}
-						break;
+                    case 6:
+                        try {
+                            // Cast String Id to Integer
+                            String idVehiculo = col.replaceAll("\"", "");
+                            event.setIdVehiculo(idVehiculo);
+                            //System.out.println(event.getIdVehiculo());
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
 
-					case 5:
-						try {
-							// Cast String Id to Integer
-							String idConductor = col.replaceAll("\"", "");
-							event.setIdConductor(idConductor);
-						} catch(Exception e) {
-                    		e.printStackTrace();
-                    	}
-						break;
+                    case 7:
+                        try {
+                            // Cast String Id to Integer
+                            String idConductor = col.replaceAll("\"", "");
+                            event.setIdConductor(idConductor);
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
 
-					case 7:
-						try {
-							// Cast String latitude to Double
-							String cleanLat = col.replaceAll("\"", "");
-							double latitud = Double.parseDouble(cleanLat.replace(",", "."));
-							event.setLatitud(latitud);
-						} catch(ClassCastException e) {
-                    		e.printStackTrace();
-                    	}
-						break;
+					case 11:
+					try {
+						// Cast String distancia to Double
+						String cleanInput = col.replaceAll("\"", "");
+						double distancia = Double.parseDouble(cleanInput.replace(",", "."));
+						event.setDistancia(distancia);
+					} catch(ClassCastException e) {
+						e.printStackTrace();
+					}
+					break;
 
-					case 8:
-						try {
-							// Cast String longitud to Double
-							String cleanLong = col.replaceAll("\"", "");
-							double longitud = Double.parseDouble(cleanLong.replace(",", "."));
-							event.setLongitud(longitud);
-						} catch(ClassCastException e) {
-                    		e.printStackTrace();
-                    	}
-						break;
-
-					case 13:
-						try {
-							event.setIdEstado(col.replaceAll("\"", ""));
-						} catch(ClassCastException e) {
-                    		e.printStackTrace();
-                    	}
-						break;
+                    case 14:
+                        try {
+                            event.setIdEstado(col.replaceAll("\"", ""));
+                        } catch(ClassCastException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
-	        	i++;
-	        	out.collect(new Tuple2<>(event, event.getIdVehiculo()));
-	        }
-		}
-	}
+                i++;
+               
+            }
+            out.collect(new Tuple2<Event, String>(event, event.getIdVehiculo()));
+        }
+    }
 }
-	
-		

@@ -13,10 +13,8 @@ public class MyProcessWindowFunction
     @Override
     public void process(String key, Context context, Iterable<Tuple2<Event, String>> input, Collector<Tramo> out) {
         ArrayList<Event> windowEvents = new ArrayList<Event>();
-        Double latitud1 = 0.0; 
-        Double latitud2 = 0.0;
-        Double longitud1 = 0.0;
-        Double longitud2 = 0.0;
+        Double distanciaInicial = 0.0;
+        Double distanciaFinal = 0.0;
         Tramo tramo = new Tramo();
 
         for (Tuple2<Event, String> in: input) {
@@ -27,19 +25,18 @@ public class MyProcessWindowFunction
         int i = 0;
         for (Event e: windowEvents) {
             if (i == 0) {
-                latitud1 = e.getLatitud();
-                longitud1 = e.getLongitud();
+                distanciaInicial = e.getDistancia();
                 tramo.setFechaInicio(e.getFecha());
                 tramo.setIdConductor(e.getIdConductor());
                 tramo.setIdVehiculo(e.getIdVehiculo());
             }
             if (i == limit) {
-                latitud2 = e.getLatitud();
-                longitud2 = e.getLongitud();
-                tramo.setFechaInicio(e.getFecha()); 
+                distanciaFinal = e.getDistancia();
+                tramo.setFechaFinal(e.getFecha()); 
             }
+            i++;
         }
-        tramo.setDistance(latitud1, longitud1, latitud2, longitud2);
+        tramo.setDistance(distanciaInicial, distanciaFinal);
         tramo.setVelocity();
 
         out.collect(tramo);

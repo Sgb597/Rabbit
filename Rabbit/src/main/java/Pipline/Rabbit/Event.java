@@ -8,8 +8,7 @@ public class Event {
 	private String idConductor;
 	private String idVehiculo;
 	private Date fecha;
-	private Double latitud;
-	private Double longitud;
+	private Double distancia;
 
 	public Event() {}
 	
@@ -20,23 +19,6 @@ public class Event {
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
 	}
-
-	public Double getLatitud() {
-		return latitud;
-	}
-
-	public void setLatitud(Double latitud) {
-		this.latitud = latitud;
-	}
-
-	public Double getLongitud() {
-		return longitud;
-	}
-
-	public void setLongitud(Double longitud) {
-		this.longitud = longitud;
-	}
-
 
 	public String getIdVehiculo() {
 		return idVehiculo;
@@ -63,4 +45,11 @@ public class Event {
 		this.idConductor = idConductor;
 	}
 
+	public Double getDistancia() {
+		return distancia;
+	}
+
+	public void setDistancia(Double distancia) {
+		this.distancia = distancia;
+	}
 }

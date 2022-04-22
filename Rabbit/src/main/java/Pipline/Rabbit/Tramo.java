@@ -51,36 +51,21 @@ public class Tramo {
         this.distancia = distancia;
     }
 
-    void setDistance(double lat1, double lon1, double lat2, double lon2) {
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        // Distancia en kilometros
-        dist = dist * 1.609344;
-        
-        this.distancia = dist;
-      }
-      
-      // Grados a radianes
-      private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-      }
-      
-      // Radianes a grados
-      private double rad2deg(double rad) {
-        return (rad * 180.0 / Math.PI);
+    void setDistance(double distanciaInicial, double distanciaFinal) {
+        double deltaDistancia = distanciaFinal - distanciaInicial;
+        this.distancia = deltaDistancia;
       }
 
-      private double calculateTimeDifference() {
-        double hours = this.fechaInicio.getTime() - this.fechaFinal.getTime();
-        return hours;
-      }
+    public double calculateTimeDifference() {
+        // Time diff in milliseconds
+        double deltaTime = this.fechaFinal.getTime() - this.fechaInicio.getTime();
+        double hours = (deltaTime/ (1000 * 60 * 60)); 
+    return hours;
+    }
 
-      void setVelocity() {
-          double dist = this.distancia;
-          double timeDiff = calculateTimeDifference();
-          this.velocidad = dist / timeDiff;
-      }
+    void setVelocity() {
+        double dist = this.distancia;
+        double timeDiff = calculateTimeDifference();
+        this.velocidad = dist / timeDiff;
+    }
 }
