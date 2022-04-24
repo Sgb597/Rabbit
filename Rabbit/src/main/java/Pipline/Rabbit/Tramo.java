@@ -56,16 +56,16 @@ public class Tramo {
         this.distancia = deltaDistancia;
       }
 
-    public double calculateTimeDifference() {
+    public long calculateTimeDifference() {
         // Time diff in milliseconds
-        double deltaTime = this.fechaFinal.getTime() - this.fechaInicio.getTime();
-        double hours = (deltaTime/ (1000 * 60 * 60)); 
+        long deltaTime = this.fechaFinal.getTime() - this.fechaInicio.getTime();
+        long hours = (deltaTime/ (1000 * 60 * 60)); 
     return hours;
     }
 
     void setVelocity() {
         double dist = this.distancia;
-        double timeDiff = calculateTimeDifference();
-        this.velocidad = dist / timeDiff;
+        long timeDiff = calculateTimeDifference();
+        this.velocidad = dist / (double)timeDiff ;
     }
 }
