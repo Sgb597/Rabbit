@@ -55,10 +55,6 @@ public class MyProcessWindowFunction
         double deltaDistance = (distanciaFinal - distanciaInicial)/1000;
         double velocity = deltaDistance/deltaTime;
         
-        System.out.println("timediff Cast " + deltaTime);
-        System.out.println("distance Cast " + deltaDistance);
-        System.out.println("velocity Cast " + velocity);
-        
         tramo.setDistancia(deltaDistance);
         tramo.setVelocidad(velocity);
         out.collect(new Tuple6<String, String, Date, Date, Double, Double>(

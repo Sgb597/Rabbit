@@ -157,64 +157,7 @@ public class StreamingJob {
 
         @Override
         public void flatMap(String value, Collector<Tuple2<Event, String>> out) throws Exception {
-            int i = 0;
-            Event event = new Event();
-            for(String col: value.split(",")){
-                switch(i){
-                    case 4: 
-                        try {
-                            SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                            // Cast String Date to Date
-                            Date date = dateParser.parse(col.replaceAll("\"", ""));
-                            event.setFecha(date);
-                        } catch(ParseException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-
-                    case 6:
-                        try {
-                            // Cast String Id to Integer
-                            String idVehiculo = col.replaceAll("\"", "");
-                            event.setIdVehiculo(idVehiculo);
-                            //System.out.println(event.getIdVehiculo());
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-
-                    case 7:
-                        try {
-                            // Cast String Id to Integer
-                            String idConductor = col.replaceAll("\"", "");
-                            event.setIdConductor(idConductor);
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                        break;
-
-					case 11:
-					try {
-						// Cast String distancia to Double
-						String cleanInput = col.replaceAll("\"", "");
-						Double distancia = Double.parseDouble(cleanInput);
-						event.setDistancia(distancia);
-					} catch(ClassCastException e) {
-						e.printStackTrace();
-					}
-					break;
-
-                    case 14:
-                        try {
-                            event.setIdEstado(col.replaceAll("\"", ""));
-                        } catch(ClassCastException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                }
-                i++;
-               
-            }
+            Event event = new Event(value);
             out.collect(new Tuple2<Event, String>(event, event.getIdVehiculo()));
         }
     }
