@@ -33,6 +33,7 @@ import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.windowing.triggers.DeltaTrigger;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
+import org.apache.flink.streaming.connectors.rabbitmq.RMQSink;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
 
@@ -40,6 +41,7 @@ import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -57,7 +59,8 @@ public class StreamingJob {
         final String virtualHost = "/";
         final String userName = "guest";
         final String password = "guest";
-        final String queueName = "historico";
+        final String inputQueue = "toflink";
+        final String outputQueue = "fromflink";
         final int port = 5672;
         final String input = "/home/sebastian/Documents/TFM/data/EventosHistorico_muestra_NH.csv";
 
@@ -75,17 +78,12 @@ public class StreamingJob {
           .setPassword(password)
           .build();
       
-      final 
-        
         final DataStream<String> textStream = env
         	    .addSource(new RMQSource<String>(
         	        connectionConfig,
-        	        queueName,
+        	        inputQueue,
         	        false,
         	        new SimpleStringSchema()));
-       
-        // Used for quick testing
-//        DataStreamSource<String> textStream = env.readTextFile(input);
  
         DataStream<Tuple2<Event, String>> parsedStream = textStream
                 .flatMap(new Parser());
@@ -125,29 +123,31 @@ public class StreamingJob {
                         return null;
                     }
                 });
-       tramoStream.addSink(
-    		   JdbcSink.sink(
-                       "insert into eventos_historico (ID_Vehiculo, ID_Conductor, Fecha_Inicio, Fecha_Final, Velocidad, Distancia) values (?, ?, ?, ?, ?, ?)",
-                       (statement, tramo) -> {
-                           statement.setString(1, tramo.f0);
-                           statement.setString(2, tramo.f1);
-                           statement.setDate(3, tramo.f2);
-                           statement.setDate(4, tramo.f3);
-                           statement.setDate(5, tramo.f4);
-                           statement.setDate(6, tramo.f5);
-                       },
-                       JdbcExecutionOptions.builder()
-                               .withBatchSize(1000)
-                               .withBatchIntervalMs(200)
-                               .withMaxRetries(5)
-                               .build(),
-                       new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                               .withUrl("127.0.0.1:3306")
-                               .withUsername("root")
-                               .withPassword("")
-                               .build()
-    				   )
-    		   );
+        
+        /*
+         *  The Output String has the following IdConductor + IdVehiculo + FechaInicio + FechaFinal + Distancia + Velocidad 
+         */
+        DataStream<String> outputStream = tramoStream
+        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, String>() {
+                    @Override
+                    public String map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
+                    	UUID uuid = UUID.randomUUID();
+                    	String output = 
+                    			uuid.toString() + "," +
+                    			summary.f0 + "," +
+                    			summary.f1 + "," +
+                    			summary.f2.toString() + "," +
+                    			summary.f3.toString() + "," +
+                    			summary.f4.toString() + "," +
+                    			summary.f5.toString();
+                        return output;
+                    }
+                });
+                
+        outputStream.addSink(new RMQSink<String>(
+    		    connectionConfig,            // config for the RabbitMQ connection
+    		    outputQueue,                 // name of the RabbitMQ queue to send messages to
+    		    new SimpleStringSchema()));  // serialization schema to turn Java objects to messages
 
         env.execute("Streaming Job ProcessWindowFunction");
     }
