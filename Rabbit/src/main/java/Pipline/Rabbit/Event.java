@@ -34,7 +34,6 @@ public class Event {
                         // Cast String Id to Integer
                         String idVehiculo = col.replaceAll("\"", "");
                         this.idVehiculo = idVehiculo;
-                        //System.out.println(event.getIdVehiculo());
                     } catch(Exception e) {
                         e.printStackTrace();
                     }

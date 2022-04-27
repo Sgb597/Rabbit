@@ -103,10 +103,17 @@ public class StreamingJob {
             }
         });    		
 		
+//        DataStream<Tuple6<String, String, Date, Date, Double, Double>> tramoStream = parsedStream
+//        		.keyBy(value -> value.f1)
+//                .window(TumblingProcessingTimeWindows.of(Time.milliseconds(500)))
+//                .process(new MyProcessWindowFunction());
+//        
+        
         DataStream<Tuple6<String, String, Date, Date, Double, Double>> tramoStream = parsedStream
         		.keyBy(value -> value.f1)
-                .window(TumblingProcessingTimeWindows.of(Time.milliseconds(500)))
-                .process(new MyProcessWindowFunction());
+		        .window(GlobalWindows.create())
+		        .trigger(new TramoTrigger())
+		        .process(new MyProcessWindowFunction());
         
         //Pretty Print
         tramoStream
@@ -124,6 +131,7 @@ public class StreamingJob {
                     }
                 });
         
+    
         /*
          *  The Output String has the following IdConductor + IdVehiculo + FechaInicio + FechaFinal + Distancia + Velocidad 
          */
@@ -145,9 +153,9 @@ public class StreamingJob {
                 });
                 
         outputStream.addSink(new RMQSink<String>(
-    		    connectionConfig,            // config for the RabbitMQ connection
-    		    outputQueue,                 // name of the RabbitMQ queue to send messages to
-    		    new SimpleStringSchema()));  // serialization schema to turn Java objects to messages
+    		    connectionConfig,
+    		    outputQueue,                 
+    		    new SimpleStringSchema()));
 
         env.execute("Streaming Job ProcessWindowFunction");
     }

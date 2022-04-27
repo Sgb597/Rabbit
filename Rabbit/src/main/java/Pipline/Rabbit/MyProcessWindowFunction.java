@@ -6,11 +6,12 @@ import java.util.Date;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 public class MyProcessWindowFunction 
-    extends ProcessWindowFunction<Tuple2<Event, String>, Tuple6<String, String, Date, Date, Double, Double>, String, TimeWindow> {
+    extends ProcessWindowFunction<Tuple2<Event, String>, Tuple6<String, String, Date, Date, Double, Double>, String, GlobalWindow> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -19,11 +20,6 @@ public class MyProcessWindowFunction
         Double distanciaInicial = 0.0;
         Double distanciaFinal = 0.0;
         Tramo tramo = new Tramo();
-        
-//        TimeWindow window = context.window();
-//        long start = window.getStart();
-//        long end = window.getEnd();
-//        System.out.println("Window start Time " + start + " End " + end);
 
         for (Tuple2<Event, String> in: input) {
             windowEvents.add(in.f0);
@@ -31,6 +27,7 @@ public class MyProcessWindowFunction
 
         int limit = windowEvents.size();
         int i = 0;
+        
         for (Event e: windowEvents) {
             if (i == 0) {
             	// Capturar información del evento inicial
@@ -52,7 +49,9 @@ public class MyProcessWindowFunction
          * deltaTime is in hours and deltaDistance is in kms
          */
         double deltaTime = (double)(tramo.getFechaFinal().getTime() - tramo.getFechaInicio().getTime())/(1000.0 * 60.0 * 60.0);
+        System.out.println("DELTA TIME FOR CAR IS: " + deltaTime);
         double deltaDistance = (distanciaFinal - distanciaInicial)/1000;
+        System.out.println("DELTA DISTANCE FOR CAR IS: " + deltaDistance);
         double velocity = deltaDistance/deltaTime;
         
         tramo.setDistancia(deltaDistance);
