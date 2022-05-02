@@ -36,7 +36,7 @@ import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSink;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
-
+import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -131,7 +131,6 @@ public class StreamingJob {
                     }
                 });
         
-    
         /*
          *  The Output String has the following IdConductor + IdVehiculo + FechaInicio + FechaFinal + Distancia + Velocidad 
          */
@@ -152,10 +151,15 @@ public class StreamingJob {
                     }
                 });
                 
-        outputStream.addSink(new RMQSink<String>(
-    		    connectionConfig,
-    		    outputQueue,                 
-    		    new SimpleStringSchema()));
+//        outputStream.addSink(new RMQSink<String>(
+//    		    connectionConfig,
+//    		    outputQueue,                 
+//    		    new SimpleStringSchema()));
+        
+        CassandraSink.addSink(outputStream)
+        .setQuery("")
+        .setHost("127.0.0.1")
+        .build();
 
         env.execute("Streaming Job ProcessWindowFunction");
     }
