@@ -134,31 +134,31 @@ public class StreamingJob {
         /*
          *  The Output String has the following IdConductor + IdVehiculo + FechaInicio + FechaFinal + Distancia + Velocidad 
          */
-        DataStream<String> outputStream = tramoStream
-        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, String>() {
-                    @Override
-                    public String map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
-                    	UUID uuid = UUID.randomUUID();
-                    	String output = 
-                    			uuid.toString() + "," +
-                    			summary.f0 + "," +
-                    			summary.f1 + "," +
-                    			summary.f2.toString() + "," +
-                    			summary.f3.toString() + "," +
-                    			summary.f4.toString() + "," +
-                    			summary.f5.toString();
-                        return output;
-                    }
-                });
+//        DataStream<String> outputStream = tramoStream
+//        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, String>() {
+//                    @Override
+//                    public String map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
+//                    	UUID uuid = UUID.randomUUID();
+//                    	String output = 
+//                    			uuid.toString() + "," +
+//                    			summary.f0 + "," +
+//                    			summary.f1 + "," +
+//                    			summary.f2.toString() + "," +
+//                    			summary.f3.toString() + "," +
+//                    			summary.f4.toString() + "," +
+//                    			summary.f5.toString();
+//                        return output;
+//                    }
+//                });
                 
 //        outputStream.addSink(new RMQSink<String>(
 //    		    connectionConfig,
 //    		    outputQueue,                 
 //    		    new SimpleStringSchema()));
         
-        CassandraSink.addSink(outputStream)
-        .setQuery("")
-        .setHost("127.0.0.1")
+        CassandraSink.addSink(tramoStream)
+        .setQuery("INSERT INTO tfm.tramos(IdConductor, IdVehiculo, FechaInicio, FechaFinal, Distancia, Velocidad) values (?, ?, ?, ?, ?, ?);")
+        .setHost("127.0.0.1:9042")
         .build();
 
         env.execute("Streaming Job ProcessWindowFunction");
