@@ -1,29 +1,30 @@
 package Pipline.Rabbit;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Tramo {
     
     private String idConductor;
     private String idVehiculo;
-    private Date fechaInicio;
-    private Date fechaFinal;
+    private Timestamp fechaInicio;
+    private Timestamp fechaFinal;
     private Double velocidad;
     private Double distancia;
     
     public Tramo() {
     }
 
-    public Date getFechaInicio() {
+    public Timestamp getFechaInicio() {
         return fechaInicio;
     }
-    public void setFechaInicio(Date fechaInicio) {
+    public void setFechaInicio(Timestamp fechaInicio) {
         this.fechaInicio = fechaInicio;
     }
-    public Date getFechaFinal() {
+    public Timestamp getFechaFinal() {
         return fechaFinal;
     }
-    public void setFechaFinal(Date fechaFinal) {
+    public void setFechaFinal(Timestamp fechaFinal) {
         this.fechaFinal = fechaFinal;
     }
     public String getIdConductor() {

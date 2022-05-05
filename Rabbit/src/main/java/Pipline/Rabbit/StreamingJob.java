@@ -31,11 +31,10 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
-import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
-import org.apache.flink.connector.jdbc.JdbcExecutionOptions;
-import org.apache.flink.connector.jdbc.JdbcSink;
 import org.apache.flink.util.Collector;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -94,27 +93,48 @@ public class StreamingJob {
                 return null;
             }
         });    		
-		
-//        DataStream<Tuple6<String, String, Date, Date, Double, Double>> tramoStream = parsedStream
-//        		.keyBy(value -> value.f1)
-//                .window(TumblingProcessingTimeWindows.of(Time.milliseconds(500)))
-//                .process(new MyProcessWindowFunction());
-//        
         
-        DataStream<Tuple6<String, String, Date, Date, Double, Double>> tramoStream = parsedStream
+        DataStream<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> tramoStream = parsedStream
         		.keyBy(value -> value.f1)
 		        .window(GlobalWindows.create())
 		        .trigger(new TramoTrigger())
 		        .process(new MyProcessWindowFunction());
         
+        /*
+         *  The Output String has the following IdVehiculo + IdConductor + FechaInicio + FechaFinal + Distancia + Velocidad 
+         */
+//        DataStream<Tuple6<String, String, Date, Date, Double, Double>> outputStream = tramoStream
+//        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, Tuple6<String, String, Date, Date, Double, Double>>() {
+//                    @Override
+//                    public Tuple6<String,String,Date,Date,Double,Double> map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
+//                    	SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//                        String inicioAsString = summary.f2.toString();
+//                        String finalAsString = summary.f3.toString();
+//                        System.out.println("Final Cast of Fecha Inicio " + inicioAsString);
+//                        System.out.println("Final Cast of Fecha Final " + finalAsString);
+//                        
+//                        Date fechaInicio = dateParser.parse(inicioAsString);
+//                        Date fechaFinal = dateParser.parse(finalAsString);
+//                    	
+//                        return new Tuple6<String, String, Date, Date, Double, Double>(
+//                				summary.f0,
+//                				summary.f1,
+//                				fechaInicio,
+//                				fechaFinal,
+//                				summary.f4,
+//                				summary.f5
+//                				);
+//                    }
+//                });
+        
         //Pretty Print
         tramoStream
-                .map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, Object>() {
+                .map(new MapFunction<Tuple6<String, String, Timestamp, Timestamp, Double, Double>, Object>() {
                     @Override
-                    public Object map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
+                    public Object map(Tuple6<String, String, Timestamp, Timestamp, Double, Double>summary) throws Exception {
                         System.out.println("Tramo : "
-                                + " IdConductor : " + summary.f0
-                                + ", IdVehiculo : " + summary.f1
+                                + " IdVehiculo : " + summary.f0
+                                + ", IdConductor : " + summary.f1
                                 + ", FechaInicio : " + summary.f2
                         		+ ", FechaFinal : " + summary.f3
                         		+ ", Distancia : " + summary.f4
@@ -123,61 +143,13 @@ public class StreamingJob {
                     }
                 });
         
-        /*
-         *  The Output String has the following IdConductor + IdVehiculo + FechaInicio + FechaFinal + Distancia + Velocidad 
-         */
-        DataStream<String> outputStream = tramoStream
-        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, String>() {
-                    @Override
-                    public String map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
-                    	UUID uuid = UUID.randomUUID();
-                    	String output = 
-                    			uuid.toString() + "," +
-                    			summary.f0 + "," +
-                    			summary.f1 + "," +
-                    			summary.f2.toString() + "," +
-                    			summary.f3.toString() + "," +
-                    			summary.f4.toString() + "," +
-                    			summary.f5.toString();
-                        return output;
-                    }
-                });
-                
-//        outputStream.addSink(new RMQSink<String>(
-//    		    connectionConfig,
-//    		    outputQueue,                 
-//    		    new SimpleStringSchema()));
         
-//        CassandraSink.addSink(tramoStream)
-//        .setQuery("INSERT INTO tfm.tramos(IdConductor, IdVehiculo, FechaInicio, FechaFinal, Distancia, Velocidad) values (?, ?, ?, ?, ?, ?);")
-//        .setHost("127.0.0.1:9042")
-//        .build();
+        CassandraSink.addSink(tramoStream)
+        .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad) values (?, ? , ?, ?, ?, ?);")
+        .setHost("127.0.0.1")
+        .build();
         
-        tramoStream.addSink(
-     		   JdbcSink.sink(
-                        "insert into eventos_historico (ID_Vehiculo, ID_Conductor, Fecha_Inicio, Fecha_Final, Velocidad, Distancia) values (?, ?, ?, ?, ?, ?)",
-                        (statement, tramo) -> {
-                            statement.setString(1, tramo.f0);
-                            statement.setString(2, tramo.f1);
-                            statement.setDate(3, (java.sql.Date) tramo.f2);
-                            statement.setDate(4, (java.sql.Date) tramo.f3);
-                            statement.setDouble(5, tramo.f4);
-                            statement.setDouble(6, tramo.f5);
-                        },
-                        JdbcExecutionOptions.builder()
-                                .withBatchSize(1000)
-                                .withBatchIntervalMs(200)
-                                .withMaxRetries(5)
-                                .build(),
-                        new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-                                .withUrl("127.0.0.1:3306")
-                                .withUsername("root")
-                                .withPassword("")
-                                .build()
-     				   )
-     		   );
-        
-        env.execute("Streaming Job guineo");
+        env.execute("Flink + Cassandra");
     }
    
     public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {

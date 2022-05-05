@@ -1,5 +1,6 @@
 package Pipline.Rabbit;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -11,11 +12,11 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 public class MyProcessWindowFunction 
-    extends ProcessWindowFunction<Tuple2<Event, String>, Tuple6<String, String, Date, Date, Double, Double>, String, GlobalWindow> {
+    extends ProcessWindowFunction<Tuple2<Event, String>, Tuple6<String, String, Timestamp, Timestamp, Double, Double>, String, GlobalWindow> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public void process(String key, Context context, Iterable<Tuple2<Event, String>> input, Collector<Tuple6<String, String, Date, Date, Double, Double>> out) {
+    public void process(String key, Context context, Iterable<Tuple2<Event, String>> input, Collector<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> out) {
         ArrayList<Event> windowEvents = new ArrayList<Event>();
         Double distanciaInicial = 0.0;
         Double distanciaFinal = 0.0;
@@ -56,9 +57,9 @@ public class MyProcessWindowFunction
         
         tramo.setDistancia(deltaDistance);
         tramo.setVelocidad(velocity);
-        out.collect(new Tuple6<String, String, Date, Date, Double, Double>(
-        		tramo.getIdConductor(),
+        out.collect(new Tuple6<String, String, Timestamp, Timestamp, Double, Double>(
         		tramo.getIdVehiculo(),
+        		tramo.getIdConductor(),
         		tramo.getFechaInicio(),
         		tramo.getFechaFinal(),
         		tramo.getDistancia(),

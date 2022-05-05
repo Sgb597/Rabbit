@@ -1,5 +1,6 @@
 package Pipline.Rabbit;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,7 +10,7 @@ public class Event {
 	private String idEstado;
 	private String idConductor;
 	private String idVehiculo;
-	private Date fecha;
+	private Timestamp fecha;
 	private Double distancia;
 
 	public Event() {}
@@ -21,9 +22,10 @@ public class Event {
                 case 4: 
                     try {
                         SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                        // Cast String Date to Date
-                        Date date = dateParser.parse(col.replaceAll("\"", ""));
-                        this.fecha = date;
+                        String dateAsString = col.replaceAll("\"", "");
+                        Date date = dateParser.parse(dateAsString);
+                        Timestamp timestamp = new java.sql.Timestamp(date.getTime());
+                        this.fecha = timestamp;
                     } catch(ParseException e) {
                         e.printStackTrace();
                     }
@@ -72,11 +74,11 @@ public class Event {
         }
 	}
 	
-	public Date getFecha() {
+	public Timestamp getFecha() {
 		return fecha;
 	}
 
-	public void setFecha(Date fecha) {
+	public void setFecha(Timestamp fecha) {
 		this.fecha = fecha;
 	}
 
