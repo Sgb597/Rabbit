@@ -20,35 +20,24 @@ package Pipline.Rabbit;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.evictors.TimeEvictor;
-import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.datastream.WindowedStream;
-import org.apache.flink.streaming.api.windowing.triggers.DeltaTrigger;
-import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.streaming.api.functions.windowing.delta.DeltaFunction;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSink;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.UUID;
-
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
+import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
+import org.apache.flink.connector.jdbc.JdbcExecutionOptions;
+import org.apache.flink.connector.jdbc.JdbcSink;
 import org.apache.flink.util.Collector;
+
+import java.util.Date;
+import java.util.UUID;
 
 public class StreamingJob {
    
@@ -84,13 +73,16 @@ public class StreamingJob {
         	        inputQueue,
         	        false,
         	        new SimpleStringSchema()));
+      
+//		DataStreamSource<String> textStream = env.readTextFile(input);
  
         DataStream<Tuple2<Event, String>> parsedStream = textStream
                 .flatMap(new Parser());
         
         parsedStream
         .map(new MapFunction<Tuple2<Event, String>, Object>() {
-            @Override
+
+			@Override
             public Object map(Tuple2<Event, String>summary) throws Exception {
                 System.out.println("Event : "
                         + " IdConductor : " + summary.f0.getIdConductor()
@@ -134,34 +126,58 @@ public class StreamingJob {
         /*
          *  The Output String has the following IdConductor + IdVehiculo + FechaInicio + FechaFinal + Distancia + Velocidad 
          */
-//        DataStream<String> outputStream = tramoStream
-//        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, String>() {
-//                    @Override
-//                    public String map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
-//                    	UUID uuid = UUID.randomUUID();
-//                    	String output = 
-//                    			uuid.toString() + "," +
-//                    			summary.f0 + "," +
-//                    			summary.f1 + "," +
-//                    			summary.f2.toString() + "," +
-//                    			summary.f3.toString() + "," +
-//                    			summary.f4.toString() + "," +
-//                    			summary.f5.toString();
-//                        return output;
-//                    }
-//                });
+        DataStream<String> outputStream = tramoStream
+        		.map(new MapFunction<Tuple6<String, String, Date, Date, Double, Double>, String>() {
+                    @Override
+                    public String map(Tuple6<String, String, Date, Date, Double, Double>summary) throws Exception {
+                    	UUID uuid = UUID.randomUUID();
+                    	String output = 
+                    			uuid.toString() + "," +
+                    			summary.f0 + "," +
+                    			summary.f1 + "," +
+                    			summary.f2.toString() + "," +
+                    			summary.f3.toString() + "," +
+                    			summary.f4.toString() + "," +
+                    			summary.f5.toString();
+                        return output;
+                    }
+                });
                 
 //        outputStream.addSink(new RMQSink<String>(
 //    		    connectionConfig,
 //    		    outputQueue,                 
 //    		    new SimpleStringSchema()));
         
-        CassandraSink.addSink(tramoStream)
-        .setQuery("INSERT INTO tfm.tramos(IdConductor, IdVehiculo, FechaInicio, FechaFinal, Distancia, Velocidad) values (?, ?, ?, ?, ?, ?);")
-        .setHost("127.0.0.1:9042")
-        .build();
-
-        env.execute("Streaming Job ProcessWindowFunction");
+//        CassandraSink.addSink(tramoStream)
+//        .setQuery("INSERT INTO tfm.tramos(IdConductor, IdVehiculo, FechaInicio, FechaFinal, Distancia, Velocidad) values (?, ?, ?, ?, ?, ?);")
+//        .setHost("127.0.0.1:9042")
+//        .build();
+        
+        tramoStream.addSink(
+     		   JdbcSink.sink(
+                        "insert into eventos_historico (ID_Vehiculo, ID_Conductor, Fecha_Inicio, Fecha_Final, Velocidad, Distancia) values (?, ?, ?, ?, ?, ?)",
+                        (statement, tramo) -> {
+                            statement.setString(1, tramo.f0);
+                            statement.setString(2, tramo.f1);
+                            statement.setDate(3, (java.sql.Date) tramo.f2);
+                            statement.setDate(4, (java.sql.Date) tramo.f3);
+                            statement.setDouble(5, tramo.f4);
+                            statement.setDouble(6, tramo.f5);
+                        },
+                        JdbcExecutionOptions.builder()
+                                .withBatchSize(1000)
+                                .withBatchIntervalMs(200)
+                                .withMaxRetries(5)
+                                .build(),
+                        new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
+                                .withUrl("127.0.0.1:3306")
+                                .withUsername("root")
+                                .withPassword("")
+                                .build()
+     				   )
+     		   );
+        
+        env.execute("Streaming Job guineo");
     }
    
     public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {
