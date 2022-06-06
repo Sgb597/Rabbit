@@ -12,24 +12,24 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 public class MyProcessWindowFunction 
-    extends ProcessWindowFunction<Tuple2<Event, String>, Tuple6<String, String, Timestamp, Timestamp, Double, Double>, String, GlobalWindow> {
+    extends ProcessWindowFunction<Tuple2<JoinedEvent, String>, Tuple6<String, String, Timestamp, Timestamp, Double, Double>, String, GlobalWindow> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public void process(String key, Context context, Iterable<Tuple2<Event, String>> input, Collector<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> out) {
-        ArrayList<Event> windowEvents = new ArrayList<Event>();
+    public void process(String key, Context context, Iterable<Tuple2<JoinedEvent, String>> input, Collector<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> out) {
+        ArrayList<JoinedEvent> windowEvents = new ArrayList<JoinedEvent>();
         Double distanciaInicial = 0.0;
         Double distanciaFinal = 0.0;
         Tramo tramo = new Tramo();
 
-        for (Tuple2<Event, String> in: input) {
+        for (Tuple2<JoinedEvent, String> in: input) {
             windowEvents.add(in.f0);
         }
 
         int limit = windowEvents.size();
         int i = 0;
         
-        for (Event e: windowEvents) {
+        for (JoinedEvent e: windowEvents) {
             if (i == 0) {
             	// Capturar información del evento inicial
                 distanciaInicial = e.getDistancia();

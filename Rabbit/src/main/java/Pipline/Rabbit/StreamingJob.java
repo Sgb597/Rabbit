@@ -47,10 +47,8 @@ public class StreamingJob {
         final String virtualHost = "/";
         final String userName = "guest";
         final String password = "guest";
-        final String inputQueue = "toflink";
-        final String outputQueue = "fromflink";
+        final String inputQueue = "joinedstream";
         final int port = 5672;
-        final String input = "/home/sebastian/Documents/TFM/data/EventosHistorico_muestra_NH.csv";
 
         // set up the streaming execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -71,35 +69,26 @@ public class StreamingJob {
         	        connectionConfig,
         	        inputQueue,
         	        false,
-        	        new SimpleStringSchema()));
-      
-//		DataStreamSource<String> textStream = env.readTextFile(input);
- 
-        DataStream<Tuple2<Event, String>> parsedStream = textStream
+        	        new SimpleStringSchema()));	
+        
+        DataStream<Tuple2<JoinedEvent, String>> parsedStream = textStream
                 .flatMap(new Parser());
         
-        parsedStream
-        .map(new MapFunction<Tuple2<Event, String>, Object>() {
-
-			@Override
-            public Object map(Tuple2<Event, String>summary) throws Exception {
-                System.out.println("Event : "
-                        + " IdConductor : " + summary.f0.getIdConductor()
-                        + ", IdVehiculo : " + summary.f0.getIdVehiculo()
-                        + ", Estado : " + summary.f0.getIdEstado()
-                        + ", Fecha : " + summary.f0.getFecha()
-                        + ", Distancia : " + summary.f0.getDistancia()
-                        );
-                return null;
-            }
-        });    		
+       parsedStream
+      .map(new MapFunction<Tuple2<JoinedEvent, String>, Object>() {
+          @Override
+          public Object map(Tuple2<JoinedEvent, String>summary) throws Exception {
+              System.out.println(summary.f0.toString());
+              return null;
+          }
+      });
         
-        DataStream<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> tramoStream = parsedStream
-        		.keyBy(value -> value.f1)
-		        .window(GlobalWindows.create())
-		        .trigger(new TramoTrigger())
-		        .process(new MyProcessWindowFunction());
-        
+//        DataStream<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> tramoStream = parsedStream
+//        		.keyBy(value -> value.f1)
+//		        .window(GlobalWindows.create())
+//		        .trigger(new TramoTrigger())
+//		        .process(new MyProcessWindowFunction());
+      
         /*
          *  The Output String has the following IdVehiculo + IdConductor + FechaInicio + FechaFinal + Distancia + Velocidad 
          */
@@ -128,37 +117,37 @@ public class StreamingJob {
 //                });
         
         //Pretty Print
-        tramoStream
-                .map(new MapFunction<Tuple6<String, String, Timestamp, Timestamp, Double, Double>, Object>() {
-                    @Override
-                    public Object map(Tuple6<String, String, Timestamp, Timestamp, Double, Double>summary) throws Exception {
-                        System.out.println("Tramo : "
-                                + " IdVehiculo : " + summary.f0
-                                + ", IdConductor : " + summary.f1
-                                + ", FechaInicio : " + summary.f2
-                        		+ ", FechaFinal : " + summary.f3
-                        		+ ", Distancia : " + summary.f4
-                        		+ ", Velocidad : " + summary.f5);
-                        return null;
-                    }
-                });
-        
-        
-        CassandraSink.addSink(tramoStream)
-        .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad) values (?, ? , ?, ?, ?, ?);")
-        .setHost("127.0.0.1")
-        .build();
+//        tramoStream
+//                .map(new MapFunction<Tuple6<String, String, Timestamp, Timestamp, Double, Double>, Object>() {
+//                    @Override
+//                    public Object map(Tuple6<String, String, Timestamp, Timestamp, Double, Double>summary) throws Exception {
+//                        System.out.println("Tramo : "
+//                                + " IdVehiculo : " + summary.f0
+//                                + ", IdConductor : " + summary.f1
+//                                + ", FechaInicio : " + summary.f2
+//                        		+ ", FechaFinal : " + summary.f3
+//                        		+ ", Distancia : " + summary.f4
+//                        		+ ", Velocidad : " + summary.f5);
+//                        return null;
+//                    }
+//                });
+//        
+//        
+//        CassandraSink.addSink(tramoStream)
+//        .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad) values (?, ? , ?, ?, ?, ?);")
+//        .setHost("127.0.0.1")
+//        .build();
         
         env.execute("Flink + Cassandra");
     }
    
-    public static final class Parser implements FlatMapFunction<String, Tuple2<Event, String>> {
+    public static final class Parser implements FlatMapFunction<String, Tuple2<JoinedEvent, String>> {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public void flatMap(String value, Collector<Tuple2<Event, String>> out) throws Exception {
-            Event event = new Event(value);
-            out.collect(new Tuple2<Event, String>(event, event.getIdVehiculo()));
+        public void flatMap(String value, Collector<Tuple2<JoinedEvent, String>> out) throws Exception {
+            JoinedEvent event = new JoinedEvent(value);
+            out.collect(new Tuple2<JoinedEvent, String>(event, event.getIdVehiculo()));
         }
     }
 }

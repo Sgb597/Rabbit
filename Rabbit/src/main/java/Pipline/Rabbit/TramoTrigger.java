@@ -19,24 +19,24 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 public class TramoTrigger<T, W extends Window> extends Trigger<T, W> {
     private static final long serialVersionUID = 1L;
 
-    private final ValueStateDescriptor<Tuple2<Event, String>> stateDesc = new ValueStateDescriptor<Tuple2<Event, String>>("last-element", TypeInformation.of(new TypeHint<Tuple2<Event, String>>() {}));
+    private final ValueStateDescriptor<Tuple2<JoinedEvent, String>> stateDesc = new ValueStateDescriptor<Tuple2<JoinedEvent, String>>("last-element", TypeInformation.of(new TypeHint<Tuple2<JoinedEvent, String>>() {}));
     
     public TramoTrigger() {}
 
     @Override
     public TriggerResult onElement(T element, long timestamp, W window, TriggerContext ctx) throws Exception {
     	
-        ValueState<Tuple2<Event, String>> lastElementState = ctx.getPartitionedState(stateDesc);
+        ValueState<Tuple2<JoinedEvent, String>> lastElementState = ctx.getPartitionedState(stateDesc);
         
-        Tuple2<Event, String> currentEvent = (Tuple2<Event, String>) element;
+        Tuple2<JoinedEvent, String> currentEvent = (Tuple2<JoinedEvent, String>) element;
         String idEstado = currentEvent.f0.getIdEstado();
         
         if (lastElementState.value() == null) {
-        	lastElementState.update((Tuple2<Event, String>) element);
+        	lastElementState.update((Tuple2<JoinedEvent, String>) element);
             return TriggerResult.CONTINUE;
         }
         else if (lastElementState.value() != null) {
-            lastElementState.update((Tuple2<Event, String>) element);
+            lastElementState.update((Tuple2<JoinedEvent, String>) element);
             if (idEstado.equals("37+") || idEstado.equals("38+")) {
             	lastElementState.update(null);
             	System.out.println("TRIGGER FIRE PARADA");
