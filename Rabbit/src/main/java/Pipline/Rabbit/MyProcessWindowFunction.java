@@ -21,6 +21,8 @@ public class MyProcessWindowFunction
         Double distanciaInicial = 0.0;
         Double distanciaFinal = 0.0;
         Tramo tramo = new Tramo();
+        Double [] firstEventFields;
+        Double [] lastEventFields;
 
         for (Tuple2<JoinedEvent, String> in: input) {
             windowEvents.add(in.f0);
@@ -31,6 +33,7 @@ public class MyProcessWindowFunction
         
         for (JoinedEvent e: windowEvents) {
             if (i == 0) {
+            	e.get
             	// Capturar información del evento inicial
                 distanciaInicial = e.getDistancia();
                 tramo.setFechaInicio(e.getFecha());
@@ -50,9 +53,7 @@ public class MyProcessWindowFunction
          * deltaTime is in hours and deltaDistance is in kms
          */
         double deltaTime = (double)(tramo.getFechaFinal().getTime() - tramo.getFechaInicio().getTime())/(1000.0 * 60.0 * 60.0);
-        System.out.println("DELTA TIME FOR CAR IS: " + deltaTime);
         double deltaDistance = (distanciaFinal - distanciaInicial)/1000;
-        System.out.println("DELTA DISTANCE FOR CAR IS: " + deltaDistance);
         double velocity = deltaDistance/deltaTime;
         
         tramo.setDistancia(deltaDistance);
@@ -66,4 +67,6 @@ public class MyProcessWindowFunction
         		tramo.getVelocidad()
         		));
     }
+	
+	public static Double[] deltaFields(Double [])
 }

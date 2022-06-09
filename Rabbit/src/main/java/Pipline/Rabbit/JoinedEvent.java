@@ -404,6 +404,174 @@ public class JoinedEvent {
 		this.distancia = distancia;
 	}
 	
+	public Double getCruiseActive() {
+		return cruiseActive;
+	}
+
+	public void setCruiseActive(Double cruiseActive) {
+		this.cruiseActive = cruiseActive;
+	}
+
+	public Double getRpmExcesivas() {
+		return rpmExcesivas;
+	}
+
+	public void setRpmExcesivas(Double rpmExcesivas) {
+		this.rpmExcesivas = rpmExcesivas;
+	}
+
+	public Double getFrenadasBruscas() {
+		return frenadasBruscas;
+	}
+
+	public void setFrenadasBruscas(Double frenadasBruscas) {
+		this.frenadasBruscas = frenadasBruscas;
+	}
+
+	public Double getAceleracionesBruscas() {
+		return aceleracionesBruscas;
+	}
+
+	public void setAceleracionesBruscas(Double aceleracionesBruscas) {
+		this.aceleracionesBruscas = aceleracionesBruscas;
+	}
+
+	public Double getcNoPredictiva2() {
+		return cNoPredictiva2;
+	}
+
+	public void setcNoPredictiva2(Double cNoPredictiva2) {
+		this.cNoPredictiva2 = cNoPredictiva2;
+	}
+
+	public Double getzRoja2() {
+		return zRoja2;
+	}
+
+	public void setzRoja2(Double zRoja2) {
+		this.zRoja2 = zRoja2;
+	}
+
+	public Double getzMasVerde2() {
+		return zMasVerde2;
+	}
+
+	public void setzMasVerde2(Double zMasVerde2) {
+		this.zMasVerde2 = zMasVerde2;
+	}
+
+	public Double getFrenadasBruscas2() {
+		return frenadasBruscas2;
+	}
+
+	public void setFrenadasBruscas2(Double frenadasBruscas2) {
+		this.frenadasBruscas2 = frenadasBruscas2;
+	}
+
+	public Double getAceleracionesBruscas2() {
+		return aceleracionesBruscas2;
+	}
+
+	public void setAceleracionesBruscas2(Double aceleracionesBruscas2) {
+		this.aceleracionesBruscas2 = aceleracionesBruscas2;
+	}
+
+	public Double getRalInec2() {
+		return ralInec2;
+	}
+
+	public void setRalInec2(Double ralInec2) {
+		this.ralInec2 = ralInec2;
+	}
+
+	public Double getTiempoConduccionCrucero2() {
+		return tiempoConduccionCrucero2;
+	}
+
+	public void setTiempoConduccionCrucero2(Double tiempoConduccionCrucero2) {
+		this.tiempoConduccionCrucero2 = tiempoConduccionCrucero2;
+	}
+
+	public Double getMetrosAscendidos2() {
+		return metrosAscendidos2;
+	}
+
+	public void setMetrosAscendidos2(Double metrosAscendidos2) {
+		this.metrosAscendidos2 = metrosAscendidos2;
+	}
+
+	public Double getMetrosDescendidos2() {
+		return metrosDescendidos2;
+	}
+
+	public void setMetrosDescendidos2(Double metrosDescendidos2) {
+		this.metrosDescendidos2 = metrosDescendidos2;
+	}
+
+	public Double getOdometro2() {
+		return odometro2;
+	}
+
+	public void setOdometro2(Double odometro2) {
+		this.odometro2 = odometro2;
+	}
+
+	public Double getTotalFuel2() {
+		return totalFuel2;
+	}
+
+	public void setTotalFuel2(Double totalFuel2) {
+		this.totalFuel2 = totalFuel2;
+	}
+
+	public Double getTiempoRal2() {
+		return tiempoRal2;
+	}
+
+	public void setTiempoRal2(Double tiempoRal2) {
+		this.tiempoRal2 = tiempoRal2;
+	}
+
+	public Double getConsumoRal2() {
+		return consumoRal2;
+	}
+
+	public void setConsumoRal2(Double consumoRal2) {
+		this.consumoRal2 = consumoRal2;
+	}
+
+	public Double getTiempoConduccion2() {
+		return tiempoConduccion2;
+	}
+
+	public void setTiempoConduccion2(Double tiempoConduccion2) {
+		this.tiempoConduccion2 = tiempoConduccion2;
+	}
+
+	public Double getnFreno3() {
+		return nFreno3;
+	}
+
+	public void setnFreno3(Double nFreno3) {
+		this.nFreno3 = nFreno3;
+	}
+
+	public Double getnEmbrague3() {
+		return nEmbrague3;
+	}
+
+	public void setnEmbrague3(Double nEmbrague3) {
+		this.nEmbrague3 = nEmbrague3;
+	}
+
+	public Double getTiempoMotor3() {
+		return tiempoMotor3;
+	}
+
+	public void setTiempoMotor3(Double tiempoMotor3) {
+		this.tiempoMotor3 = tiempoMotor3;
+	}
+
 	@Override
 	public String toString() {
 		return "JoinedEvent [idEstado=" + idEstado + ", idConductor=" + idConductor + ", idVehiculo=" + idVehiculo
