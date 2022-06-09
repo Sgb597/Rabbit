@@ -3,6 +3,7 @@ package Pipline.Rabbit;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
@@ -20,9 +21,9 @@ public class MyProcessWindowFunction
         ArrayList<JoinedEvent> windowEvents = new ArrayList<JoinedEvent>();
         Double distanciaInicial = 0.0;
         Double distanciaFinal = 0.0;
+        HashMap<String, Double> firstEvent = null;
+        HashMap<String, Double> lastEvent = null;
         Tramo tramo = new Tramo();
-        Double [] firstEventFields;
-        Double [] lastEventFields;
 
         for (Tuple2<JoinedEvent, String> in: input) {
             windowEvents.add(in.f0);
@@ -33,8 +34,8 @@ public class MyProcessWindowFunction
         
         for (JoinedEvent e: windowEvents) {
             if (i == 0) {
-            	e.get
             	// Capturar información del evento inicial
+            	firstEvent = e.getTramoData();
                 distanciaInicial = e.getDistancia();
                 tramo.setFechaInicio(e.getFecha());
                 tramo.setIdConductor(e.getIdConductor());
@@ -42,6 +43,7 @@ public class MyProcessWindowFunction
             }
             if (i == (limit - 1)) {
             	// Capturar información del evento final
+            	lastEvent = e.getTramoData();
                 distanciaFinal = e.getDistancia();
                 tramo.setFechaFinal(e.getFecha()); 
             }
@@ -56,6 +58,7 @@ public class MyProcessWindowFunction
         double deltaDistance = (distanciaFinal - distanciaInicial)/1000;
         double velocity = deltaDistance/deltaTime;
         
+        tramo.subtractTramoMaps(lastEvent, firstEvent);
         tramo.setDistancia(deltaDistance);
         tramo.setVelocidad(velocity);
         out.collect(new Tuple6<String, String, Timestamp, Timestamp, Double, Double>(
@@ -67,6 +70,4 @@ public class MyProcessWindowFunction
         		tramo.getVelocidad()
         		));
     }
-	
-	public static Double[] deltaFields(Double [])
 }

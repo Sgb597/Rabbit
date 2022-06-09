@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 public class JoinedEvent {
 	
@@ -33,6 +34,7 @@ public class JoinedEvent {
 	private Double nFreno3;
 	private Double nEmbrague3;
 	private Double tiempoMotor3;
+	private HashMap<String, Double> tramoData;
 
 	public JoinedEvent() {}
 	
@@ -76,14 +78,19 @@ public class JoinedEvent {
                 }
                 break;
             case 4:
-				try {
-					// Cast String distancia to Double
-					String cleanInput = col.replaceAll("\"", "");
-					Double distancia = Double.parseDouble(cleanInput);
-					this.distancia = distancia;
-				} catch(ClassCastException e) {
-					e.printStackTrace();
-				}
+            	if(!isNull(col.replaceAll("\"", ""))) {
+            		try {
+    					// Cast String distancia to Double
+    					String cleanInput = col.replaceAll("\"", "");
+    					Double distancia = Double.parseDouble(cleanInput);
+    					this.distancia = distancia;
+    				} catch(ClassCastException e) {
+    					e.printStackTrace();
+    				}
+            	}
+            	else {
+            		this.distancia = 0.0;
+            	}
 				break;
                 case 5:
                 	if(!isNull(col.replaceAll("\"", ""))) {
@@ -91,11 +98,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double cruiseActive = Double.parseDouble(cleanInput);
                             this.cruiseActive = cruiseActive;
+                            this.tramoData.put("cruiseActive", cruiseActive);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.cruiseActive = 0.0;
+                    	this.tramoData.put("cruiseActive", 0.0);
                     }
                     break;
                 case 6:
@@ -104,11 +113,14 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double rpmExcesivas = Double.parseDouble(cleanInput);
                             this.rpmExcesivas = rpmExcesivas;
+                            this.tramoData.put("rpmExcesivas", rpmExcesivas);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.rpmExcesivas = 0.0;
+                    	this.tramoData.put("rpmExcesivas", 0.0);
+
                     }
                     break;
                 case 7:
@@ -117,11 +129,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double frenadasBruscas = Double.parseDouble(cleanInput);
                             this.frenadasBruscas = frenadasBruscas;
+                            this.tramoData.put("frenadasBruscas", frenadasBruscas);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.frenadasBruscas = 0.0;
+                    	this.tramoData.put("frenadasBruscas", 0.0);
                     }
                     break;
                 case 8:
@@ -130,11 +144,14 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double aceleracionesBruscas = Double.parseDouble(cleanInput);
                             this.aceleracionesBruscas = aceleracionesBruscas;
+                            this.tramoData.put("aceleracionesBruscas", aceleracionesBruscas);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.aceleracionesBruscas = 0.0;
+                    	this.tramoData.put("aceleracionesBruscas", 0.0);
+
                     }
                     break;
                 case 9:
@@ -143,11 +160,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double cNoPredictiva2 = Double.parseDouble(cleanInput);
                             this.cNoPredictiva2 = cNoPredictiva2;
+                            this.tramoData.put("cNoPredictiva2", cNoPredictiva2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.cNoPredictiva2 = 0.0;
+                        this.tramoData.put("cNoPredictiva2", 0.0);
                     }
                     break;
                 case 10:
@@ -156,11 +175,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double zRoja2 = Double.parseDouble(cleanInput);
                             this.zRoja2 = zRoja2;
+                            this.tramoData.put("zRoja2", zRoja2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.zRoja2 = 0.0;
+                        this.tramoData.put("zRoja2", 0.0);
                     }
                     break;
                 case 11:
@@ -169,11 +190,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double zMasVerde2 = Double.parseDouble(cleanInput);
                             this.zMasVerde2 = zMasVerde2;
+                            this.tramoData.put("zMasVerde2", zMasVerde2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.zMasVerde2 = 0.0;
+                        this.tramoData.put("zMasVerde2", 0.0);
                     }
                     break;
                 case 12:
@@ -182,11 +205,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double frenadasBruscas2 = Double.parseDouble(cleanInput);
                             this.frenadasBruscas2 = frenadasBruscas2;
+                            this.tramoData.put("frenadasBruscas2", frenadasBruscas2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.frenadasBruscas2 = 0.0;
+                        this.tramoData.put("frenadasBruscas2", 0.0);
                     }
                     break;
                 case 13:
@@ -195,11 +220,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double aceleracionesBruscas2 = Double.parseDouble(cleanInput);
                             this.aceleracionesBruscas2 = aceleracionesBruscas2;
+                            this.tramoData.put("aceleracionesBruscas2", aceleracionesBruscas2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.aceleracionesBruscas2 = 0.0;
+                        this.tramoData.put("aceleracionesBruscas2", 0.0);
                     }
                     break;
                 case 14:
@@ -208,11 +235,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double ralInnec2 = Double.parseDouble(cleanInput);
                             this.ralInec2 = ralInnec2;
+                            this.tramoData.put("ralInnec2", ralInnec2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.ralInec2 = 0.0;
+                        this.tramoData.put("ralInnec2", 0.0);
                     }
                     break;
                 case 15:
@@ -221,11 +250,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double tiempoConduccionCrucero2 = Double.parseDouble(cleanInput);
                             this.tiempoConduccionCrucero2 = tiempoConduccionCrucero2;
+                            this.tramoData.put("tiempoConduccionCrucero2", tiempoConduccionCrucero2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.tiempoConduccionCrucero2 = 0.0;
+                        this.tramoData.put("tiempoConduccionCrucero2", 0.0);
                     }
                     break;
                 case 16:
@@ -234,11 +265,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double metrosAscendidos2 = Double.parseDouble(cleanInput);
                             this.metrosAscendidos2 = metrosAscendidos2;
+                            this.tramoData.put("metrosAscendidos2", metrosAscendidos2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.metrosAscendidos2 = 0.0;
+                        this.tramoData.put("metrosAscendidos2", 0.0);
                     }
                     break;
                 case 17:
@@ -247,11 +280,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double metrosDescendidos2 = Double.parseDouble(cleanInput);
                             this.metrosDescendidos2 = metrosDescendidos2;
+                            this.tramoData.put("metrosDescendidos2", metrosDescendidos2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.metrosDescendidos2 = 0.0;
+                        this.tramoData.put("metrosDescendidos2", 0.0);
                     }
                     break;
                 case 18:
@@ -260,11 +295,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double odometro2 = Double.parseDouble(cleanInput);
                             this.odometro2 = odometro2;
+                            this.tramoData.put("odometro2", odometro2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.odometro2 = 0.0;
+                        this.tramoData.put("odometro2", 0.0);
                     }
                     break;
                 case 19:
@@ -273,11 +310,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double totalFuel2 = Double.parseDouble(cleanInput);
                             this.totalFuel2 = totalFuel2;
+                            this.tramoData.put("totalFuel2", totalFuel2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.totalFuel2 = 0.0;
+                        this.tramoData.put("totalFuel2", 0.0);
                     }
                     break;
                 case 20:
@@ -286,11 +325,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double tiempoRal2 = Double.parseDouble(cleanInput);
                             this.tiempoRal2 = tiempoRal2;
+                            this.tramoData.put("tiempoRal2", tiempoRal2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.tiempoRal2 = 0.0;
+                        this.tramoData.put("tiempoRal2", 0.0);
                     }
                     break;
                 case 21:
@@ -299,11 +340,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double consumoRal2 = Double.parseDouble(cleanInput);
                             this.consumoRal2 = consumoRal2;
+                            this.tramoData.put("consumoRal2", consumoRal2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.consumoRal2 = 0.0;
+                        this.tramoData.put("consumoRal2", 0.0);
                     }
                     break;
                 case 22:
@@ -312,11 +355,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double tiempoConduccion2 = Double.parseDouble(cleanInput);
                             this.tiempoConduccion2 = tiempoConduccion2;
+                            this.tramoData.put("tiempoConduccion2", tiempoConduccion2);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.tiempoConduccion2 = 0.0;
+                        this.tramoData.put("tiempoConduccion2", 0.0);
                     }
                     break;
                 case 23:
@@ -325,11 +370,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double nFreno3 = Double.parseDouble(cleanInput);
                             this.nFreno3 = nFreno3;
+                            this.tramoData.put("nFreno3", nFreno3);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.nFreno3 = 0.0;
+                        this.tramoData.put("nFreno3", 0.0);
                     }
                     break;
                 case 24:
@@ -338,11 +385,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double nEmbrague3 = Double.parseDouble(cleanInput);
                             this.nEmbrague3 = nEmbrague3;
+                            this.tramoData.put("nEmbrague3", nEmbrague3);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.nEmbrague3 = 0.0;
+                        this.tramoData.put("nEmbrague3", 0.0);
                     }
                     break;
                 case 25:
@@ -351,11 +400,13 @@ public class JoinedEvent {
                 			String cleanInput = col.replaceAll("\"", "");
         					Double tiempoMotor3 = Double.parseDouble(cleanInput);
                             this.tiempoMotor3 = tiempoMotor3;
+                            this.tramoData.put("tiempoMotor3", tiempoMotor3);
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                 	} else {
                     	this.tiempoMotor3 = 0.0;
+                        this.tramoData.put("tiempoMotor3", 0.0);
                     }
                     break;
             }
@@ -572,6 +623,14 @@ public class JoinedEvent {
 		this.tiempoMotor3 = tiempoMotor3;
 	}
 
+	public HashMap<String, Double> getTramoData() {
+		return tramoData;
+	}
+
+	public void setTramoData(HashMap<String, Double> tramoData) {
+		this.tramoData = tramoData;
+	}
+	
 	@Override
 	public String toString() {
 		return "JoinedEvent [idEstado=" + idEstado + ", idConductor=" + idConductor + ", idVehiculo=" + idVehiculo
