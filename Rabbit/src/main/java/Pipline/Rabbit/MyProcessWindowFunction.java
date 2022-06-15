@@ -13,11 +13,11 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 public class MyProcessWindowFunction 
-    extends ProcessWindowFunction<Tuple2<JoinedEvent, String>, Tuple6<String, String, Timestamp, Timestamp, Double, Double>, String, GlobalWindow> {
+    extends ProcessWindowFunction<Tuple2<JoinedEvent, String>, Tuple2<Tramo, String>, String, GlobalWindow> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public void process(String key, Context context, Iterable<Tuple2<JoinedEvent, String>> input, Collector<Tuple6<String, String, Timestamp, Timestamp, Double, Double>> out) {
+    public void process(String key, Context context, Iterable<Tuple2<JoinedEvent, String>> input, Collector<Tuple2<Tramo, String>> out) {
         ArrayList<JoinedEvent> windowEvents = new ArrayList<JoinedEvent>();
         Double distanciaInicial = 0.0;
         Double distanciaFinal = 0.0;
@@ -61,13 +61,10 @@ public class MyProcessWindowFunction
         tramo.subtractTramoMaps(lastEvent, firstEvent);
         tramo.setDistancia(deltaDistance);
         tramo.setVelocidad(velocity);
-        out.collect(new Tuple6<String, String, Timestamp, Timestamp, Double, Double>(
-        		tramo.getIdVehiculo(),
-        		tramo.getIdConductor(),
-        		tramo.getFechaInicio(),
-        		tramo.getFechaFinal(),
-        		tramo.getDistancia(),
-        		tramo.getVelocidad()
+        
+        out.collect(new Tuple2<Tramo, String>(
+        		tramo,
+        		tramo.getIdVehiculo()
         		));
     }
 }

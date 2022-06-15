@@ -71,13 +71,4 @@ public class TramoTrigger<T, W extends Window> extends Trigger<T, W> {
 		// TODO Auto-generated method stub
 		
 	}
-
-//    @Override
-//    public void clear(W window, TriggerContext ctx) throws Exception {
-//        ctx.getPartitionedState(stateDesc).clear();
-//    }
-//
-//    public static <T, W extends Window> TramoTrigger<T, W> of(DeltaFunction<T> deltaFunction, TypeSerializer<T> stateSerializer) {
-//        return new TramoTrigger<>(deltaFunction, stateSerializer);
-//    }
 }
