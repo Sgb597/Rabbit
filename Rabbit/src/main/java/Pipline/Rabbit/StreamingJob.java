@@ -74,14 +74,15 @@ public class StreamingJob {
         DataStream<Tuple2<JoinedEvent, String>> parsedStream = textStream
                 .flatMap(new Parser());
         
-       parsedStream
-      .map(new MapFunction<Tuple2<JoinedEvent, String>, Object>() {
-          @Override
-          public Object map(Tuple2<JoinedEvent, String>summary) throws Exception {
-              System.out.println(summary.f0.toString());
-              return null;
-          }
-      });
+//       parsedStream
+//      .map(new MapFunction<Tuple2<JoinedEvent, String>, Object>() {
+//          @Override
+//          public Object map(Tuple2<JoinedEvent, String>summary) throws Exception {
+//              System.out.println(summary.f0.toString());
+//              System.out.println(summary.f0.getTramoData());
+//              return null;
+//          }
+//      });
         
         DataStream<Tuple2<Tramo, String>> tramoStream = parsedStream
         		.keyBy(value -> value.f1)
@@ -95,8 +96,8 @@ public class StreamingJob {
                     @Override
                     public Object map(Tuple2<Tramo, String> summary) throws Exception {
                         System.out.println("Tramo : "
-                                + " IdVehiculo : " + summary.f0
-                                + ", IdConductor : " + summary.f1
+                                + " IdVehiculo : " + summary.f0.getIdVehiculo()
+                                + ", IdConductor : " + summary.f0.getIdConductor()
                                 + ", FechaInicio : " + summary.f0.getFechaInicio()
                         		+ ", FechaFinal : " + summary.f0.getFechaFinal()
                         		+ ", Distancia : " + summary.f0.getDistancia()

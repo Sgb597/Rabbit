@@ -39,12 +39,14 @@ public class JoinedEvent {
 	public JoinedEvent() {}
 	
 	public JoinedEvent(String value) {
+		this.tramoData = new HashMap<String, Double>();
+		
 		int i = 0;
 		for(String col: value.split(",")){
             switch(i){
             case 0:
                 try {
-                    String idVehiculo = col.replaceAll("\"", "");
+                    String idVehiculo = col;
                     this.idVehiculo = idVehiculo;
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -52,7 +54,7 @@ public class JoinedEvent {
                 break;
             case 1:
                 try {
-                    String idConductor = col.replaceAll("\"", "");
+                    String idConductor = col;
                     this.idConductor = idConductor;
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -60,7 +62,7 @@ public class JoinedEvent {
                 break;
             case 2:
                 try {
-                    String idEstado = col.replaceAll("\"", "");
+                    String idEstado = col;
                     this.idEstado = idEstado;
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -69,7 +71,7 @@ public class JoinedEvent {
             case 3: 
                 try {
                     SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                    String dateAsString = col.replaceAll("\"", "");
+                    String dateAsString = col;
                     Date date = dateParser.parse(dateAsString);
                     Timestamp timestamp = new java.sql.Timestamp(date.getTime());
                     this.fecha = timestamp;
@@ -78,10 +80,10 @@ public class JoinedEvent {
                 }
                 break;
             case 4:
-            	if(!isNull(col.replaceAll("\"", ""))) {
+            	if(!isNull(col)) {
             		try {
     					// Cast String distancia to Double
-    					String cleanInput = col.replaceAll("\"", "");
+    					String cleanInput = col;
     					Double distancia = Double.parseDouble(cleanInput);
     					this.distancia = distancia;
     				} catch(ClassCastException e) {
@@ -93,9 +95,9 @@ public class JoinedEvent {
             	}
 				break;
                 case 5:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double cruiseActive = Double.parseDouble(cleanInput);
                             this.cruiseActive = cruiseActive;
                             this.tramoData.put("cruiseActive", cruiseActive);
@@ -108,9 +110,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 6:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double rpmExcesivas = Double.parseDouble(cleanInput);
                             this.rpmExcesivas = rpmExcesivas;
                             this.tramoData.put("rpmExcesivas", rpmExcesivas);
@@ -124,9 +126,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 7:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double frenadasBruscas = Double.parseDouble(cleanInput);
                             this.frenadasBruscas = frenadasBruscas;
                             this.tramoData.put("frenadasBruscas", frenadasBruscas);
@@ -139,9 +141,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 8:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double aceleracionesBruscas = Double.parseDouble(cleanInput);
                             this.aceleracionesBruscas = aceleracionesBruscas;
                             this.tramoData.put("aceleracionesBruscas", aceleracionesBruscas);
@@ -155,9 +157,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 9:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double cNoPredictiva2 = Double.parseDouble(cleanInput);
                             this.cNoPredictiva2 = cNoPredictiva2;
                             this.tramoData.put("cNoPredictiva2", cNoPredictiva2);
@@ -170,9 +172,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 10:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double zRoja2 = Double.parseDouble(cleanInput);
                             this.zRoja2 = zRoja2;
                             this.tramoData.put("zRoja2", zRoja2);
@@ -185,9 +187,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 11:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double zMasVerde2 = Double.parseDouble(cleanInput);
                             this.zMasVerde2 = zMasVerde2;
                             this.tramoData.put("zMasVerde2", zMasVerde2);
@@ -200,9 +202,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 12:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double frenadasBruscas2 = Double.parseDouble(cleanInput);
                             this.frenadasBruscas2 = frenadasBruscas2;
                             this.tramoData.put("frenadasBruscas2", frenadasBruscas2);
@@ -215,9 +217,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 13:
-                	if(!isNull(col.replaceAll("\"", ""))) {
+                	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double aceleracionesBruscas2 = Double.parseDouble(cleanInput);
                             this.aceleracionesBruscas2 = aceleracionesBruscas2;
                             this.tramoData.put("aceleracionesBruscas2", aceleracionesBruscas2);
@@ -230,9 +232,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 14:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double ralInnec2 = Double.parseDouble(cleanInput);
                             this.ralInec2 = ralInnec2;
                             this.tramoData.put("ralInnec2", ralInnec2);
@@ -245,9 +247,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 15:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double tiempoConduccionCrucero2 = Double.parseDouble(cleanInput);
                             this.tiempoConduccionCrucero2 = tiempoConduccionCrucero2;
                             this.tramoData.put("tiempoConduccionCrucero2", tiempoConduccionCrucero2);
@@ -260,9 +262,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 16:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double metrosAscendidos2 = Double.parseDouble(cleanInput);
                             this.metrosAscendidos2 = metrosAscendidos2;
                             this.tramoData.put("metrosAscendidos2", metrosAscendidos2);
@@ -275,9 +277,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 17:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double metrosDescendidos2 = Double.parseDouble(cleanInput);
                             this.metrosDescendidos2 = metrosDescendidos2;
                             this.tramoData.put("metrosDescendidos2", metrosDescendidos2);
@@ -290,9 +292,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 18:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double odometro2 = Double.parseDouble(cleanInput);
                             this.odometro2 = odometro2;
                             this.tramoData.put("odometro2", odometro2);
@@ -305,9 +307,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 19:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double totalFuel2 = Double.parseDouble(cleanInput);
                             this.totalFuel2 = totalFuel2;
                             this.tramoData.put("totalFuel2", totalFuel2);
@@ -320,9 +322,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 20:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double tiempoRal2 = Double.parseDouble(cleanInput);
                             this.tiempoRal2 = tiempoRal2;
                             this.tramoData.put("tiempoRal2", tiempoRal2);
@@ -335,9 +337,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 21:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double consumoRal2 = Double.parseDouble(cleanInput);
                             this.consumoRal2 = consumoRal2;
                             this.tramoData.put("consumoRal2", consumoRal2);
@@ -350,9 +352,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 22:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double tiempoConduccion2 = Double.parseDouble(cleanInput);
                             this.tiempoConduccion2 = tiempoConduccion2;
                             this.tramoData.put("tiempoConduccion2", tiempoConduccion2);
@@ -365,9 +367,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 23:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double nFreno3 = Double.parseDouble(cleanInput);
                             this.nFreno3 = nFreno3;
                             this.tramoData.put("nFreno3", nFreno3);
@@ -380,9 +382,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 24:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double nEmbrague3 = Double.parseDouble(cleanInput);
                             this.nEmbrague3 = nEmbrague3;
                             this.tramoData.put("nEmbrague3", nEmbrague3);
@@ -395,9 +397,9 @@ public class JoinedEvent {
                     }
                     break;
                 case 25:
-                   	if(!isNull(col.replaceAll("\"", ""))) {
+                   	if(!isNull(col)) {
                 		try {
-                			String cleanInput = col.replaceAll("\"", "");
+                			String cleanInput = col;
         					Double tiempoMotor3 = Double.parseDouble(cleanInput);
                             this.tiempoMotor3 = tiempoMotor3;
                             this.tramoData.put("tiempoMotor3", tiempoMotor3);
@@ -631,23 +633,15 @@ public class JoinedEvent {
 		this.tramoData = tramoData;
 	}
 	
+
 	@Override
 	public String toString() {
 		return "JoinedEvent [idEstado=" + idEstado + ", idConductor=" + idConductor + ", idVehiculo=" + idVehiculo
-				+ ", fecha=" + fecha + ", distancia=" + distancia + ", cruiseActive=" + cruiseActive + ", rpmExcesivas="
-				+ rpmExcesivas + ", frenadasBruscas=" + frenadasBruscas + ", aceleracionesBruscas="
-				+ aceleracionesBruscas + ", cNoPredictiva2=" + cNoPredictiva2 + ", zRoja2=" + zRoja2 + ", zMasVerde2="
-				+ zMasVerde2 + ", frenadasBruscas2=" + frenadasBruscas2 + ", aceleracionesBruscas2="
-				+ aceleracionesBruscas2 + ", ralInec2=" + ralInec2 + ", tiempoConduccionCrucero2="
-				+ tiempoConduccionCrucero2 + ", metrosAscendidos2=" + metrosAscendidos2 + ", metrosDescendidos2="
-				+ metrosDescendidos2 + ", odometro2=" + odometro2 + ", totalFuel2=" + totalFuel2 + ", tiempoRal2="
-				+ tiempoRal2 + ", consumoRal2=" + consumoRal2 + ", tiempoConduccion2=" + tiempoConduccion2
-				+ ", nFreno3=" + nFreno3 + ", nEmbrague3=" + nEmbrague3 + ", tiempoMotor3=" + tiempoMotor3 + "]";
+				+ ", fecha=" + fecha + ", distancia=" + distancia + "]";
 	}
-	
+
 	public static boolean isNull(String input) {
-		
-		if(input.equalsIgnoreCase("NULL") || input.equalsIgnoreCase("-999") || input.isBlank() || input.isEmpty()) {
+		if(input.equalsIgnoreCase("NULL") || input.equalsIgnoreCase("-999")) {
 			return true;
 		}
 		else {

@@ -15,6 +15,7 @@ public class Tramo {
 	private HashMap<String, Double> tramoData;
 
 	public Tramo() {
+		this.tramoData = new HashMap<String, Double>();
     }
 
     public Timestamp getFechaInicio() {
@@ -80,12 +81,12 @@ public class Tramo {
     }
     
     public void subtractTramoMaps(HashMap<String, Double> lastEvent, HashMap<String, Double> firstEvent) {
-    	HashMap<String, Double> tramoData = null;
     	
     	for (String key: lastEvent.keySet()) {
     	    Double result = lastEvent.get(key) - firstEvent.get(key);
-    	    tramoData.put(key, result);
+    	    System.out.println("Key " + key + " result " + result);
+    	    this.tramoData.put(key, result);
+    	    System.out.println("value inside map " + this.tramoData.get(key));
     	}
-    	this.tramoData = tramoData;
     }
 }
