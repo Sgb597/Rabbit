@@ -127,6 +127,7 @@ public class StreamingJob {
                         return null;
                     }
                 });
+        
 //        CassandraSink.addSink(tramoStream)
 //        .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad) values (?, ? , ?, ?, ?, ?);")
 //        .setHost("127.0.0.1")

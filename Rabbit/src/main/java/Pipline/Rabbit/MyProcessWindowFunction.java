@@ -19,46 +19,31 @@ public class MyProcessWindowFunction
 	@Override
     public void process(String key, Context context, Iterable<Tuple2<JoinedEvent, String>> input, Collector<Tuple2<Tramo, String>> out) {
         ArrayList<JoinedEvent> windowEvents = new ArrayList<JoinedEvent>();
-        Double distanciaInicial = 0.0;
-        Double distanciaFinal = 0.0;
-        HashMap<String, Double> firstEvent = null;
-        HashMap<String, Double> lastEvent = null;
         Tramo tramo = new Tramo();
 
         for (Tuple2<JoinedEvent, String> in: input) {
             windowEvents.add(in.f0);
         }
-
-        int limit = windowEvents.size();
-        int i = 0;
         
-        for (JoinedEvent e: windowEvents) {
-            if (i == 0) {
-            	// Capturar información del evento inicial
-            	firstEvent = e.getTramoData();
-                distanciaInicial = e.getDistancia();
-                tramo.setFechaInicio(e.getFecha());
-                tramo.setIdConductor(e.getIdConductor());
-                tramo.setIdVehiculo(e.getIdVehiculo());
-            }
-            if (i == (limit - 1)) {
-            	// Capturar información del evento final
-            	lastEvent = e.getTramoData();
-                distanciaFinal = e.getDistancia();
-                tramo.setFechaFinal(e.getFecha()); 
-            }
-            i++;
-        }
+        JoinedEvent firstEvent = windowEvents.get(0);
+        JoinedEvent lastEvent = windowEvents.get(windowEvents.size() - 1);
         
+        System.out.println("FIRST AND LAST EVENT MAPS");
+        System.out.println(firstEvent.getTramoData());
+        System.out.println(firstEvent.getTramoData());
         /*
          * for deltaTime getTime() returns ms in long format so it has been casted to double to avoid truncation
          * deltaTime is in hours and deltaDistance is in kms
          */
-        double deltaTime = (double)(tramo.getFechaFinal().getTime() - tramo.getFechaInicio().getTime())/(1000.0 * 60.0 * 60.0);
-        double deltaDistance = (distanciaFinal - distanciaInicial)/1000;
+        double deltaTime = (double)(lastEvent.getFecha().getTime() - firstEvent.getFecha().getTime())/(1000.0 * 60.0 * 60.0);
+        double deltaDistance = (lastEvent.getDistancia() - firstEvent.getDistancia())/1000;
         double velocity = deltaDistance/deltaTime;
         
-        tramo.subtractTramoMaps(lastEvent, firstEvent);
+        tramo.setFechaInicio(firstEvent.getFecha());
+        tramo.setIdConductor(firstEvent.getIdConductor());
+        tramo.setIdVehiculo(firstEvent.getIdVehiculo());
+        tramo.setFechaFinal(lastEvent.getFecha());
+        tramo.setTramoData(subtractTramoMaps(lastEvent.getTramoData(), firstEvent.getTramoData()));
         tramo.setDistancia(deltaDistance);
         tramo.setVelocidad(velocity);
         
@@ -67,4 +52,14 @@ public class MyProcessWindowFunction
         		tramo.getIdVehiculo()
         		));
     }
+
+	private HashMap<String, Double> subtractTramoMaps(HashMap<String, Double> lastEvent, HashMap<String, Double> firstEvent) {
+		HashMap<String, Double> tempMap = new HashMap<String, Double>();
+		
+		for (String key: lastEvent.keySet()) {
+		    Double result = lastEvent.get(key) - firstEvent.get(key);
+		    tempMap.put(key, result);
+		}
+		return tempMap;
+	}
 }

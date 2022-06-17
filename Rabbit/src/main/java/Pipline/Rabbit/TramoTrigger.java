@@ -22,7 +22,7 @@ public class TramoTrigger<T, W extends Window> extends Trigger<T, W> {
     private final ValueStateDescriptor<Tuple2<JoinedEvent, String>> stateDesc = new ValueStateDescriptor<Tuple2<JoinedEvent, String>>("last-element", TypeInformation.of(new TypeHint<Tuple2<JoinedEvent, String>>() {}));
     
     public TramoTrigger() {}
-
+    
     @Override
     public TriggerResult onElement(T element, long timestamp, W window, TriggerContext ctx) throws Exception {
     	
@@ -39,16 +39,16 @@ public class TramoTrigger<T, W extends Window> extends Trigger<T, W> {
             lastElementState.update((Tuple2<JoinedEvent, String>) element);
             if (idEstado.equals("37+") || idEstado.equals("38+")) {
             	lastElementState.update(null);
-            	System.out.println("TRIGGER FIRE PARADA");
-            	return TriggerResult.FIRE;
+            	System.out.println("TRIGGER FIRE_AND_PURGE PARADA");
+            	return TriggerResult.FIRE_AND_PURGE;
             } else if (idEstado.equals("50+")) {
             	lastElementState.update(null);
-            	System.out.println("TRIGGER FIRE CAMBIO DE CONDUCTOR");
-            	return TriggerResult.FIRE;
+            	System.out.println("TRIGGER FIRE_AND_PURGE CAMBIO DE CONDUCTOR");
+            	return TriggerResult.FIRE_AND_PURGE;
             } else if (idEstado.equals("243")) {
 	        	lastElementState.update(null);
-	        	System.out.println("TRIGGER FIRE CAMBIO DE PAÍS");
-	        	return TriggerResult.FIRE;
+	        	System.out.println("TRIGGER FIRE_AND_PURGE CAMBIO DE PAIS");
+	        	return TriggerResult.FIRE_AND_PURGE;
 	        }
         } else {
             return TriggerResult.CONTINUE;

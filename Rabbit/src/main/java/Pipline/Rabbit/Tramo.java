@@ -80,13 +80,13 @@ public class Tramo {
         this.velocidad = dist / (double)timeDiff ;
     }
     
-    public void subtractTramoMaps(HashMap<String, Double> lastEvent, HashMap<String, Double> firstEvent) {
+    public HashMap<String, Double> subtractTramoMaps(HashMap<String, Double> lastEvent, HashMap<String, Double> firstEvent) {
+    	HashMap<String, Double> tempMap = new HashMap<String, Double>();
     	
     	for (String key: lastEvent.keySet()) {
     	    Double result = lastEvent.get(key) - firstEvent.get(key);
-    	    System.out.println("Key " + key + " result " + result);
-    	    this.tramoData.put(key, result);
-    	    System.out.println("value inside map " + this.tramoData.get(key));
+    	    tempMap.put(key, result);
     	}
+    	return tempMap;
     }
 }
