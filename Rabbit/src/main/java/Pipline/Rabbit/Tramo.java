@@ -59,7 +59,8 @@ public class Tramo {
 	}
 
 	public void setTramoData(HashMap<String, Double> tramoData) {
-		this.tramoData = tramoData;
+		this.tramoData.putAll(tramoData);
+		System.out.println("this.tramo cruisactive " + this.tramoData.get("cruiseActive"));
 	}
 
     void setDistance(double distanciaInicial, double distanciaFinal) {
@@ -78,15 +79,5 @@ public class Tramo {
         double dist = this.distancia;
         long timeDiff = calculateTimeDifference();
         this.velocidad = dist / (double)timeDiff ;
-    }
-    
-    public HashMap<String, Double> subtractTramoMaps(HashMap<String, Double> lastEvent, HashMap<String, Double> firstEvent) {
-    	HashMap<String, Double> tempMap = new HashMap<String, Double>();
-    	
-    	for (String key: lastEvent.keySet()) {
-    	    Double result = lastEvent.get(key) - firstEvent.get(key);
-    	    tempMap.put(key, result);
-    	}
-    	return tempMap;
     }
 }

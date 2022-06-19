@@ -28,14 +28,17 @@ import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
+import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.util.Collector;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class StreamingJob {
@@ -74,64 +77,31 @@ public class StreamingJob {
         DataStream<Tuple2<JoinedEvent, String>> parsedStream = textStream
                 .flatMap(new Parser());
         
-//       parsedStream
-//      .map(new MapFunction<Tuple2<JoinedEvent, String>, Object>() {
-//          @Override
-//          public Object map(Tuple2<JoinedEvent, String>summary) throws Exception {
-//              System.out.println(summary.f0.toString());
-//              System.out.println(summary.f0.getTramoData());
-//              return null;
-//          }
-//      });
-        
-        DataStream<Tuple2<Tramo, String>> tramoStream = parsedStream
+        DataStream<Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>> tramoStream = parsedStream
         		.keyBy(value -> value.f1)
 		        .window(GlobalWindows.create())
 		        .trigger(new TramoTrigger())
 		        .process(new MyProcessWindowFunction());
         
-        //Pretty Print
-        tramoStream
-                .map(new MapFunction<Tuple2<Tramo, String>, Object>() {
-                    @Override
-                    public Object map(Tuple2<Tramo, String> summary) throws Exception {
-                        System.out.println("Tramo : "
-                                + " IdVehiculo : " + summary.f0.getIdVehiculo()
-                                + ", IdConductor : " + summary.f0.getIdConductor()
-                                + ", FechaInicio : " + summary.f0.getFechaInicio()
-                        		+ ", FechaFinal : " + summary.f0.getFechaFinal()
-                        		+ ", Distancia : " + summary.f0.getDistancia()
-                        		+ ", Velocidad : " + summary.f0.getDistancia()
-                        		+ ", CruiseActive : " + summary.f0.getTramoData().get("cruiseActive")
-                        		+ ", RPMExcesivas : " + summary.f0.getTramoData().get("RPMExcesivas")
-                        		+ ", FrenadasBruscas : " + summary.f0.getTramoData().get("FrenadasBruscas")
-                        		+ ", AceleracionesBruscas : " + summary.f0.getTramoData().get("AceleracionesBruscas")
-                        		+ ", CNoPredictiva2 : " + summary.f0.getTramoData().get("CNoPredictiva2")
-                        		+ " ZRoja2 : " + summary.f0.getTramoData().get("ZRoja2")
-                        		+ " ZMasVerde2 : " + summary.f0.getTramoData().get("ZMasVerde2")
-                        		+ " FrenadasBruscas2 : " + summary.f0.getTramoData().get("FrenadasBruscas2")
-                        		+ " AceleracionesBruscas2 : " + summary.f0.getTramoData().get("AceleracionesBruscas2")
-                        		+ " RalInec2 : " + summary.f0.getTramoData().get("RalInec2")
-                        		+ " TiempoConduccionCrucero2 : " + summary.f0.getTramoData().get("TiempoConduccionCrucero2")
-                        		+ " MetrosAscendidos2 : " + summary.f0.getTramoData().get("MetrosAscendidos2")
-                        		+ " MetrosDescendidos2 : " + summary.f0.getTramoData().get("MetrosDescendidos2")
-                        		+ " Odometro2 : " + summary.f0.getTramoData().get("Odometro2")
-                        		+ " TotalFuel2 : " + summary.f0.getTramoData().get("TotalFuel2")
-                        		+ " TiempoRal2 : " + summary.f0.getTramoData().get("TiempoRal2")
-                        		+ " ConsumoRal2 : " + summary.f0.getTramoData().get("ConsumoRal2")
-                        		+ " TiempoConduccion2 : " + summary.f0.getTramoData().get("TiempoConduccion2")
-                        		+ " NFreno3 : " + summary.f0.getTramoData().get("NFreno3")
-                        		+ " NEmbrague3 : " + summary.f0.getTramoData().get("NEmbrague3")
-                        		+ " TiempoMotor3 : " + summary.f0.getTramoData().get("TiempoMotor3")
-                        		);
-                        return null;
-                    }
-                });
+	  tramoStream
+	 .map(new MapFunction<Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>, Object>() {
+	     @Override
+	     public Object map(Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>summary) throws Exception {
+	         System.out.println(summary.f0);
+	         System.out.println(summary.f1);
+	         System.out.println(summary.f2);
+	         System.out.println(summary.f3);
+	         System.out.println(summary.f4);
+	         System.out.println(summary.f5);
+	         System.out.println(summary.f6);
+	         return null;
+	     }
+	 });
         
-//        CassandraSink.addSink(tramoStream)
-//        .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad) values (?, ? , ?, ?, ?, ?);")
-//        .setHost("127.0.0.1")
-//        .build();
+        CassandraSink.addSink(tramoStream)
+        .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad, tramoData) values (?, ?, ? , ?, ?, ?, ?);")
+        .setHost("127.0.0.1")
+        .build();
         
         env.execute("Joined Evento + Tramo Creation");
     }

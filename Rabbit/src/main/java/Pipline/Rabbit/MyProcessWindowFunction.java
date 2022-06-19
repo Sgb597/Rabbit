@@ -7,17 +7,18 @@ import java.util.HashMap;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
+import org.apache.flink.api.java.tuple.Tuple7;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 public class MyProcessWindowFunction 
-    extends ProcessWindowFunction<Tuple2<JoinedEvent, String>, Tuple2<Tramo, String>, String, GlobalWindow> {
+    extends ProcessWindowFunction<Tuple2<JoinedEvent, String>, Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>, String, GlobalWindow> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public void process(String key, Context context, Iterable<Tuple2<JoinedEvent, String>> input, Collector<Tuple2<Tramo, String>> out) {
+    public void process(String key, Context context, Iterable<Tuple2<JoinedEvent, String>> input, Collector<Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>> out) {
         ArrayList<JoinedEvent> windowEvents = new ArrayList<JoinedEvent>();
         Tramo tramo = new Tramo();
 
@@ -28,9 +29,32 @@ public class MyProcessWindowFunction
         JoinedEvent firstEvent = windowEvents.get(0);
         JoinedEvent lastEvent = windowEvents.get(windowEvents.size() - 1);
         
-        System.out.println("FIRST AND LAST EVENT MAPS");
-        System.out.println(firstEvent.getTramoData());
-        System.out.println(firstEvent.getTramoData());
+        HashMap<String, Double> canTramaFinal = new HashMap<String, Double>(lastEvent.getTramoData());
+        HashMap<String, Double> canTramaInicial = new HashMap<String, Double>(firstEvent.getTramoData());
+        HashMap<String, Double> tramoMap = new HashMap<String, Double>(tramo.getTramoData());
+
+//        System.out.println("CANTRAMA INITIAL VALS");
+//        for (String key1: canTramaInicial.keySet()) {
+//		    System.out.println(key1 + " " + canTramaInicial.get(key1));
+//		}
+//        
+//        System.out.println("CANTRAMA FINAL VALS");
+//        for (String key1: canTramaFinal.keySet()) {
+//		    System.out.println(key1 + " " + canTramaFinal.get(key1));
+//		}
+        
+        System.out.println("SUBTRACTION VALS");
+        for (String key1: canTramaFinal.keySet()) {
+		    Double result = canTramaFinal.get(key1) - canTramaInicial.get(key1);
+		    tramoMap.put(key1, result);
+		    System.out.println("subtraction result for key: " + key1 + ": " + result);
+		}
+        
+        System.out.println("PROCESS FUNCTION MAP VALS");
+        for (String key1: tramoMap.keySet()) {
+		    System.out.println(key1 + " " + tramoMap.get(key1));
+		}
+        
         /*
          * for deltaTime getTime() returns ms in long format so it has been casted to double to avoid truncation
          * deltaTime is in hours and deltaDistance is in kms
@@ -43,23 +67,18 @@ public class MyProcessWindowFunction
         tramo.setIdConductor(firstEvent.getIdConductor());
         tramo.setIdVehiculo(firstEvent.getIdVehiculo());
         tramo.setFechaFinal(lastEvent.getFecha());
-        tramo.setTramoData(subtractTramoMaps(lastEvent.getTramoData(), firstEvent.getTramoData()));
+        tramo.setTramoData(tramoMap);
         tramo.setDistancia(deltaDistance);
         tramo.setVelocidad(velocity);
         
-        out.collect(new Tuple2<Tramo, String>(
-        		tramo,
-        		tramo.getIdVehiculo()
+        out.collect(new Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>(
+        		tramo.getIdVehiculo(),
+        		tramo.getIdConductor(),
+        		tramo.getFechaInicio(),
+        		tramo.getFechaFinal(),
+        		tramo.getDistancia(),
+        		tramo.getVelocidad(),
+        		tramo.getTramoData()
         		));
     }
-
-	private HashMap<String, Double> subtractTramoMaps(HashMap<String, Double> lastEvent, HashMap<String, Double> firstEvent) {
-		HashMap<String, Double> tempMap = new HashMap<String, Double>();
-		
-		for (String key: lastEvent.keySet()) {
-		    Double result = lastEvent.get(key) - firstEvent.get(key);
-		    tempMap.put(key, result);
-		}
-		return tempMap;
-	}
 }
