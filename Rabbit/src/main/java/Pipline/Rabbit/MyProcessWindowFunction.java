@@ -29,30 +29,13 @@ public class MyProcessWindowFunction
         JoinedEvent firstEvent = windowEvents.get(0);
         JoinedEvent lastEvent = windowEvents.get(windowEvents.size() - 1);
         
-        HashMap<String, Double> canTramaFinal = new HashMap<String, Double>(lastEvent.getTramoData());
         HashMap<String, Double> canTramaInicial = new HashMap<String, Double>(firstEvent.getTramoData());
+        HashMap<String, Double> canTramaFinal = new HashMap<String, Double>(lastEvent.getTramoData());
         HashMap<String, Double> tramoMap = new HashMap<String, Double>(tramo.getTramoData());
-
-//        System.out.println("CANTRAMA INITIAL VALS");
-//        for (String key1: canTramaInicial.keySet()) {
-//		    System.out.println(key1 + " " + canTramaInicial.get(key1));
-//		}
-//        
-//        System.out.println("CANTRAMA FINAL VALS");
-//        for (String key1: canTramaFinal.keySet()) {
-//		    System.out.println(key1 + " " + canTramaFinal.get(key1));
-//		}
         
-        System.out.println("SUBTRACTION VALS");
         for (String key1: canTramaFinal.keySet()) {
 		    Double result = canTramaFinal.get(key1) - canTramaInicial.get(key1);
 		    tramoMap.put(key1, result);
-		    System.out.println("subtraction result for key: " + key1 + ": " + result);
-		}
-        
-        System.out.println("PROCESS FUNCTION MAP VALS");
-        for (String key1: tramoMap.keySet()) {
-		    System.out.println(key1 + " " + tramoMap.get(key1));
 		}
         
         /*

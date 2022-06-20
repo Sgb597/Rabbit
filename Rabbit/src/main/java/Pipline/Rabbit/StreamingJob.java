@@ -73,6 +73,14 @@ public class StreamingJob {
         	        inputQueue,
         	        false,
         	        new SimpleStringSchema()));	
+//        textStream
+//   	 .map(new MapFunction<String, Object>() {
+//   	     @Override
+//   	     public Object map(String summary) throws Exception {
+//   	         System.out.println("2ND JOB RECEIVES :" + summary);
+//   	         return null;
+//   	     }
+//   	 });
         
         DataStream<Tuple2<JoinedEvent, String>> parsedStream = textStream
                 .flatMap(new Parser());
@@ -87,13 +95,8 @@ public class StreamingJob {
 	 .map(new MapFunction<Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>, Object>() {
 	     @Override
 	     public Object map(Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>summary) throws Exception {
-	         System.out.println(summary.f0);
-	         System.out.println(summary.f1);
-	         System.out.println(summary.f2);
-	         System.out.println(summary.f3);
-	         System.out.println(summary.f4);
-	         System.out.println(summary.f5);
-	         System.out.println(summary.f6);
+	         System.out.println("HISTORICO DATA " + summary.f0 + ", " + summary.f1 + ", " +  summary.f2.toString() + ", " +  summary.f3.toString() + ", " +  summary.f4.toString() + ", " +  summary.f5.toString());
+	         System.out.println("CANTRAMA DATA " +summary.f6);
 	         return null;
 	     }
 	 });
@@ -103,7 +106,7 @@ public class StreamingJob {
         .setHost("127.0.0.1")
         .build();
         
-        env.execute("Joined Evento + Tramo Creation");
+        env.execute("JOINED EVENT + TRAMO + CASS");
     }
    
     public static final class Parser implements FlatMapFunction<String, Tuple2<JoinedEvent, String>> {

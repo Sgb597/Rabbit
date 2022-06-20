@@ -60,7 +60,6 @@ public class Tramo {
 
 	public void setTramoData(HashMap<String, Double> tramoData) {
 		this.tramoData.putAll(tramoData);
-		System.out.println("this.tramo cruisactive " + this.tramoData.get("cruiseActive"));
 	}
 
     void setDistance(double distanciaInicial, double distanciaFinal) {
