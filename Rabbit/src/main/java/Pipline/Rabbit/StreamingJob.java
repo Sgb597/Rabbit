@@ -20,6 +20,8 @@ package Pipline.Rabbit;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.connectors.rabbitmq.RMQSink;
@@ -27,6 +29,7 @@ import org.apache.flink.streaming.connectors.rabbitmq.RMQSource;
 import org.apache.flink.streaming.connectors.rabbitmq.common.RMQConnectionConfig;
 import org.apache.flink.streaming.connectors.cassandra.CassandraSink;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -51,6 +54,8 @@ public class StreamingJob {
         final String userName = "guest";
         final String password = "guest";
         final String inputQueue = "joinedstream";
+        final String historicoQueue = "historico";
+	    final String cantramaQueue = "cantrama";
         final int port = 5672;
 
         // set up the streaming execution environment
@@ -67,22 +72,56 @@ public class StreamingJob {
           .setPassword(password)
           .build();
       
-        final DataStream<String> textStream = env
+//        final DataStream<String> textStream = env
+//        	    .addSource(new RMQSource<String>(
+//        	        connectionConfig,
+//        	        inputQueue,
+//        	        false,
+//        	        new SimpleStringSchema()));	
+
+        final DataStream<String> historicoTextStream = env
         	    .addSource(new RMQSource<String>(
-        	        connectionConfig,
-        	        inputQueue,
+        	    	connectionConfig,
+        	        historicoQueue,
         	        false,
-        	        new SimpleStringSchema()));	
-//        textStream
-//   	 .map(new MapFunction<String, Object>() {
-//   	     @Override
-//   	     public Object map(String summary) throws Exception {
-//   	         System.out.println("2ND JOB RECEIVES :" + summary);
-//   	         return null;
-//   	     }
-//   	 });
+        	        new SimpleStringSchema()));
         
-        DataStream<Tuple2<JoinedEvent, String>> parsedStream = textStream
+        final DataStream<String> cantramaTextStream = env
+        	    .addSource(new RMQSource<String>(
+        	    	connectionConfig,
+        	        cantramaQueue,
+        	        false,
+        	        new SimpleStringSchema()));
+        
+        DataStream<Tuple2<Event, String>> eventStream = historicoTextStream
+                .flatMap(new EventoParser());
+        
+        DataStream<Tuple2<Cantrama, String>> cantramaStream = cantramaTextStream
+                .flatMap(new CantramaParser());
+        
+        DataStream<String> joinStream = eventStream.join(cantramaStream)
+	        .where(value -> value.f1)
+	        .equalTo(value -> value.f1)
+	        .window(TumblingProcessingTimeWindows.of(Time.milliseconds(1900)))
+	        .apply (new JoinFunction<Tuple2<Event, String>, Tuple2<Cantrama, String>, String> (){
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+	            public String join(Tuple2<Event, String> event, Tuple2<Cantrama, String> cantrama) {
+	            	String output = "";
+	            	Boolean joinStream = compareDates(event.f0.getFecha() ,cantrama.f0.getFecha());
+	            	
+	            	if (joinStream) {
+	            		output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
+	            	} else {
+	            		output = outputEventString(event.f0);
+	            	}
+	            	return output;
+	            }
+	        });
+        
+        DataStream<Tuple2<JoinedEvent, String>> parsedStream = joinStream
                 .flatMap(new Parser());
         
         DataStream<Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>> tramoStream = parsedStream
@@ -118,4 +157,77 @@ public class StreamingJob {
             out.collect(new Tuple2<JoinedEvent, String>(event, event.getIdVehiculo()));
         }
     }
+    
+    public static final class EventoParser implements FlatMapFunction<String, Tuple2<Event, String>> {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void flatMap(String value, Collector<Tuple2<Event, String>> out) throws Exception {
+            Event event = new Event(value);
+            out.collect(new Tuple2<Event, String>(event, event.getIdVehiculo()));
+        }
+    }
+    
+    public static final class CantramaParser implements FlatMapFunction<String, Tuple2<Cantrama, String>> {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void flatMap(String value, Collector<Tuple2<Cantrama, String>> out) throws Exception {
+            Cantrama cantrama = new Cantrama(value);
+            out.collect(new Tuple2<Cantrama, String>(cantrama, cantrama.getIdVehiculo()));
+        }
+    }
+   
+   public static boolean compareDates(Timestamp eventstamp, Timestamp cantramaStamp) {
+   	
+	   SimpleDateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	   
+	   String cantramaParsedDate = dateParser.format(cantramaStamp);
+	   String eventParsedDate = dateParser.format(eventstamp);
+	          	
+   	if (cantramaParsedDate.equals(eventParsedDate)) {
+   		return true;
+   	}
+	return false;
+   }
+   
+   public static String outputCantramaString(Cantrama cantrama) {
+		String attributes = "";
+		
+		attributes = cantrama.getCruiseActive() + ","
+				+ cantrama.getRpmExcesivas() + ","
+				+ cantrama.getFrenadasBruscas() + ","
+				+ cantrama.getAceleracionesBruscas() + ","
+				+ cantrama.getcNoPredictiva2() + ","
+				+ cantrama.getzRoja2() + ","
+				+ cantrama.getzMasVerde2() + ","
+				+ cantrama.getFrenadasBruscas2() + ","
+				+ cantrama.getAceleracionesBruscas2() + ","
+				+ cantrama.getRalInec2() + ","
+				+ cantrama.getTiempoConduccionCrucero2() + ","
+				+ cantrama.getMetrosAscendidos2() + ","
+				+ cantrama.getMetrosDescendidos2() + ","
+				+ cantrama.getOdometro2() + ","
+				+ cantrama.getTotalFuel2() + ","
+				+ cantrama.getTiempoRal2() + ","
+				+ cantrama.getConsumoRal2() + ","
+				+ cantrama.getTiempoConduccion2() + ","
+				+ cantrama.getnFreno3() + ","
+				+ cantrama.getnEmbrague3() + ","
+				+ cantrama.getTiempoMotor3();
+		
+		return attributes;
+	}
+   
+	public static String outputEventString(Event event) {
+		String attributes = "";
+		
+		attributes = event.getIdVehiculo() + ","
+				+ event.getIdConductor() + ","
+				+ event.getIdEstado() + ","
+				+ event.getFecha().toString() + ","
+				+ event.getDistancia().toString();
+		
+		return attributes;
+	}
 }
