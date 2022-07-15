@@ -49,11 +49,10 @@ public class StreamingJob {
     public static void main(String[] args) throws Exception {
        
         // the host, port, and queue name to connect to
-        final String hostname = "localhost";
+        final String hostname = "10.204.0.7";
         final String virtualHost = "/";
-        final String userName = "guest";
-        final String password = "guest";
-        final String inputQueue = "joinedstream";
+        final String userName = "admin";
+        final String password = "admin";
         final String historicoQueue = "historico";
 	    final String cantramaQueue = "cantrama";
         final int port = 5672;
@@ -142,7 +141,7 @@ public class StreamingJob {
         
         CassandraSink.addSink(tramoStream)
         .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad, tramoData) values (?, ?, ? , ?, ?, ?, ?);")
-        .setHost("127.0.0.1")
+        .setHost("10.204.0.3")
         .build();
         
         env.execute("JOINED EVENT + TRAMO + CASS");
