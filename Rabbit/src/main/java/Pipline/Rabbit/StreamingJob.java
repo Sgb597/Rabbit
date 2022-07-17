@@ -113,8 +113,10 @@ public class StreamingJob {
 	            	
 	            	if (joinStream) {
 	            		output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
+	            		System.out.println("JOINED EVENT " + output);
 	            	} else {
 	            		output = outputEventString(event.f0);
+	            		System.out.println("NON-JOINED EVENT " + output);
 	            	}
 	            	return output;
 	            }
