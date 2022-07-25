@@ -39,15 +39,15 @@ public class TramoTrigger<T, W extends Window> extends Trigger<T, W> {
             lastElementState.update((Tuple2<JoinedEvent, String>) element);
             if (idEstado.equals("37+") || idEstado.equals("38+")) {
             	lastElementState.update(null);
-            	//System.out.println("TRIGGER FIRE_AND_PURGE PARADA");
+            	System.out.println("TRIGGER FIRE_AND_PURGE PARADA");
             	return TriggerResult.FIRE_AND_PURGE;
             } else if (idEstado.equals("50+")) {
             	lastElementState.update(null);
-            	//System.out.println("TRIGGER FIRE_AND_PURGE CAMBIO DE CONDUCTOR");
+            	System.out.println("TRIGGER FIRE_AND_PURGE CAMBIO DE CONDUCTOR");
             	return TriggerResult.FIRE_AND_PURGE;
             } else if (idEstado.equals("243")) {
 	        	lastElementState.update(null);
-	        	//System.out.println("TRIGGER FIRE_AND_PURGE CAMBIO DE PAIS");
+	        	System.out.println("TRIGGER FIRE_AND_PURGE CAMBIO DE PAIS");
 	        	return TriggerResult.FIRE_AND_PURGE;
 	        }
         } else {
