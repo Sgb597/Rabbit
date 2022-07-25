@@ -59,7 +59,7 @@ public class JoinedEvent {
                 }
                 break;
             case 4:
-            	if(!isNull(col)) {
+            	if(!isNull(col) || !col.isEmpty()) {
             		try {
     					// Cast String distancia to Double
     					String cleanInput = col;
@@ -74,7 +74,7 @@ public class JoinedEvent {
             	}
 				break;
                 case 5:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double cruiseActive = Double.parseDouble(cleanInput);
@@ -87,7 +87,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 6:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double rpmExcesivas = Double.parseDouble(cleanInput);
@@ -101,7 +101,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 7:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double frenadasBruscas = Double.parseDouble(cleanInput);
@@ -114,7 +114,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 8:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double aceleracionesBruscas = Double.parseDouble(cleanInput);
@@ -128,7 +128,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 9:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double cNoPredictiva2 = Double.parseDouble(cleanInput);
@@ -141,7 +141,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 10:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double zRoja2 = Double.parseDouble(cleanInput);
@@ -154,7 +154,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 11:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double zMasVerde2 = Double.parseDouble(cleanInput);
@@ -167,7 +167,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 12:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double frenadasBruscas2 = Double.parseDouble(cleanInput);
@@ -180,7 +180,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 13:
-                	if(!isNull(col)) {
+                	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double aceleracionesBruscas2 = Double.parseDouble(cleanInput);
@@ -193,7 +193,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 14:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double ralInnec2 = Double.parseDouble(cleanInput);
@@ -206,7 +206,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 15:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double tiempoConduccionCrucero2 = Double.parseDouble(cleanInput);
@@ -219,7 +219,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 16:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double metrosAscendidos2 = Double.parseDouble(cleanInput);
@@ -232,7 +232,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 17:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double metrosDescendidos2 = Double.parseDouble(cleanInput);
@@ -245,7 +245,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 18:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double odometro2 = Double.parseDouble(cleanInput);
@@ -258,7 +258,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 19:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double totalFuel2 = Double.parseDouble(cleanInput);
@@ -271,7 +271,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 20:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double tiempoRal2 = Double.parseDouble(cleanInput);
@@ -284,7 +284,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 21:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double consumoRal2 = Double.parseDouble(cleanInput);
@@ -297,7 +297,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 22:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double tiempoConduccion2 = Double.parseDouble(cleanInput);
@@ -310,7 +310,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 23:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double nFreno3 = Double.parseDouble(cleanInput);
@@ -323,7 +323,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 24:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double nEmbrague3 = Double.parseDouble(cleanInput);
@@ -336,7 +336,7 @@ public class JoinedEvent {
                     }
                     break;
                 case 25:
-                   	if(!isNull(col)) {
+                   	if(!isNull(col) || !col.isEmpty()) {
                 		try {
                 			String cleanInput = col;
         					Double tiempoMotor3 = Double.parseDouble(cleanInput);

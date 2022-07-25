@@ -143,7 +143,7 @@ public class StreamingJob {
         
         CassandraSink.addSink(tramoStream)
         .setQuery("INSERT INTO tfm.tramos(idVehiculo , IdConductor , FechaInicio , FechaFinal , Distancia , Velocidad, tramoData) values (?, ?, ? , ?, ?, ?, ?);")
-        .setHost("10.204.0.3")
+        .setHost("127.0.0.1")
         .build();
         
         env.execute("JOINED EVENT + TRAMO + CASS");
