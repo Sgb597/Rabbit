@@ -33,10 +33,12 @@ public class MyProcessWindowFunction
         HashMap<String, Double> canTramaFinal = new HashMap<String, Double>(lastEvent.getTramoData());
         HashMap<String, Double> tramoMap = new HashMap<String, Double>(tramo.getTramoData());
         
-        for (String key1: canTramaFinal.keySet()) {
-		    Double result = canTramaFinal.get(key1) - canTramaInicial.get(key1);
-		    tramoMap.put(key1, result);
-		}
+        if(!canTramaFinal.isEmpty() && !canTramaInicial.isEmpty()) {
+        	for (String key1: canTramaFinal.keySet()) {
+    		    Double result = canTramaFinal.get(key1) - canTramaInicial.get(key1);
+    		    tramoMap.put(key1, result);
+    		}
+        }
         
         /*
          * for deltaTime getTime() returns ms in long format so it has been casted to double to avoid truncation
