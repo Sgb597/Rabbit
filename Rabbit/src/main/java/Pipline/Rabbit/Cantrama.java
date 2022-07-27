@@ -226,7 +226,7 @@ public class Cantrama {
 
 	public Cantrama(String value) {
 		int i = 0;
-		for(String col: value.split(",")){
+		for(String col: value.split(";")){
             switch(i){
                 case 0: 
                 	try {

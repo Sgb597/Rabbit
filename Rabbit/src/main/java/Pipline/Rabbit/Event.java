@@ -23,7 +23,7 @@ public class Event {
 
 	public Event(String value) {
 		int i = 0;
-		for(String col: value.split(",")){
+		for(String col: value.split(";")){
             switch(i){
                 case 4: 
                     try {
