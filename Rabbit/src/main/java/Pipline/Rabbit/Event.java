@@ -61,6 +61,7 @@ public class Event {
 				try {
 					// Cast String distancia to Double
 					String cleanInput = col.replaceAll("\"", "");
+					cleanInput = cleanInput.replaceAll(",", ".");
 					Double distancia = Double.parseDouble(cleanInput);
 					this.distancia = distancia;
 				} catch(ClassCastException e) {
