@@ -226,7 +226,7 @@ public class Cantrama {
 
 	public Cantrama(String value) {
 		int i = 0;
-		for(String col: value.split(",")){
+		for(String col: value.split(";")){
             switch(i){
                 case 0: 
                 	try {
@@ -428,6 +428,18 @@ public class Cantrama {
             i++;
         }
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "Cantrama [idCantrama=" + idCantrama + ", fecha=" + fecha + ", idVehiculo=" + idVehiculo
+				+ ", cruiseActive=" + cruiseActive + ", rpmExcesivas=" + rpmExcesivas + ", frenadasBruscas="
+				+ frenadasBruscas + ", aceleracionesBruscas=" + aceleracionesBruscas + ", cNoPredictiva2="
+				+ cNoPredictiva2 + ", zRoja2=" + zRoja2 + ", zMasVerde2=" + zMasVerde2 + ", frenadasBruscas2="
+				+ frenadasBruscas2 + ", aceleracionesBruscas2=" + aceleracionesBruscas2 + ", ralInec2=" + ralInec2
+				+ ", tiempoConduccionCrucero2=" + tiempoConduccionCrucero2 + ", metrosAscendidos2=" + metrosAscendidos2
+				+ ", metrosDescendidos2=" + metrosDescendidos2 + ", odometro2=" + odometro2 + ", totalFuel2="
+				+ totalFuel2 + ", tiempoRal2=" + tiempoRal2 + ", consumoRal2=" + consumoRal2 + ", tiempoConduccion2="
+				+ tiempoConduccion2 + ", nFreno3=" + nFreno3 + ", nEmbrague3=" + nEmbrague3 + ", tiempoMotor3="
+				+ tiempoMotor3 + "]";
+	}
 }

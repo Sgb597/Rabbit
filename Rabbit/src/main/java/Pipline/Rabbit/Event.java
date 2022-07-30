@@ -15,15 +15,9 @@ public class Event {
 
 	public Event() {}
 	
-	@Override
-	public String toString() {
-		return idEstado + "," + idConductor + "," + idVehiculo
-				+ "," + fecha + "," + distancia;
-	}
-
 	public Event(String value) {
 		int i = 0;
-		for(String col: value.split(",")){
+		for(String col: value.split(";")){
             switch(i){
                 case 4: 
                     try {
@@ -61,6 +55,7 @@ public class Event {
 				try {
 					// Cast String distancia to Double
 					String cleanInput = col.replaceAll("\"", "");
+					cleanInput = cleanInput.replaceAll(",", ".");
 					Double distancia = Double.parseDouble(cleanInput);
 					this.distancia = distancia;
 				} catch(ClassCastException e) {
@@ -80,6 +75,12 @@ public class Event {
         }
 	}
 	
+	@Override
+	public String toString() {
+		return "Event [idEstado=" + idEstado + ", idConductor=" + idConductor + ", idVehiculo=" + idVehiculo
+				+ ", fecha=" + fecha + ", distancia=" + distancia + "]";
+	}
+
 	public Timestamp getFecha() {
 		return fecha;
 	}

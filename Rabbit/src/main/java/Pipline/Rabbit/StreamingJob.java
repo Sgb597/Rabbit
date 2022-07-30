@@ -49,7 +49,7 @@ public class StreamingJob {
     public static void main(String[] args) throws Exception {
        
         // the host, port, and queue name to connect to
-        final String hostname = "10.204.0.7";
+    	final String hostname = "10.204.0.7";
         final String virtualHost = "/";
         final String userName = "admin";
         final String password = "admin";
@@ -109,15 +109,16 @@ public class StreamingJob {
 				@Override
 	            public String join(Tuple2<Event, String> event, Tuple2<Cantrama, String> cantrama) {
 	            	String output = "";
-	            	Boolean joinStream = compareDates(event.f0.getFecha() ,cantrama.f0.getFecha());
-	            	
-	            	if (joinStream) {
-	            		output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
-	            		System.out.println("JOINED EVENT " + output);
-	            	} else {
-	            		output = outputEventString(event.f0);
-	            		System.out.println("NON-JOINED EVENT " + output);
-	            	}
+//	            	Boolean joinStream = compareDates(event.f0.getFecha() ,cantrama.f0.getFecha());
+//	            	
+//	            	if (joinStream) {
+//	            		output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
+//	            		System.out.println("JOINED EVENT " + output);
+//	            	} else {
+//	            		output = outputEventString(event.f0);
+//	            		System.out.println("NON-JOINED EVENT " + output);
+//	            	}
+	            	output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
 	            	return output;
 	            }
 	        });

@@ -45,7 +45,7 @@ public class MyProcessWindowFunction
          * deltaTime is in hours and deltaDistance is in kms
          */
         double deltaTime = (double)(lastEvent.getFecha().getTime() - firstEvent.getFecha().getTime())/(1000.0 * 60.0 * 60.0);
-        double deltaDistance = (lastEvent.getDistancia() - firstEvent.getDistancia())/1000;
+        double deltaDistance = (lastEvent.getDistancia() - firstEvent.getDistancia());
         double velocity = deltaDistance/deltaTime;
         
         tramo.setFechaInicio(firstEvent.getFecha());
