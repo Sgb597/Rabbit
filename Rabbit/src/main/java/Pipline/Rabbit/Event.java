@@ -63,7 +63,7 @@ public class Event {
 				}
 				break;
 
-                case 14:
+                case 17:
                     try {
                         this.idEstado = col.replaceAll("\"", "");
                     } catch(ClassCastException e) {
