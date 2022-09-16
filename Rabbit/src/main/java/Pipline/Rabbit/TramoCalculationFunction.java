@@ -13,7 +13,7 @@ import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
-public class MyProcessWindowFunction 
+public class TramoCalculationFunction 
     extends ProcessWindowFunction<Tuple2<JoinedEvent, String>, Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>, String, GlobalWindow> {
 	private static final long serialVersionUID = 1L;
 

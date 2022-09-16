@@ -109,15 +109,15 @@ public class StreamingJob {
 				@Override
 	            public String join(Tuple2<Event, String> event, Tuple2<Cantrama, String> cantrama) {
 	            	String output = "";
-//	            	Boolean joinStream = compareDates(event.f0.getFecha() ,cantrama.f0.getFecha());
-//	            	
-//	            	if (joinStream) {
-//	            		output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
-//	            		System.out.println("JOINED EVENT " + output);
-//	            	} else {
-//	            		output = outputEventString(event.f0);
-//	            		System.out.println("NON-JOINED EVENT " + output);
-//	            	}
+	            	Boolean joinStream = compareDates(event.f0.getFecha() ,cantrama.f0.getFecha());
+	            	
+	            	if (joinStream) {
+	            		output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
+	            		System.out.println("JOINED EVENT " + output);
+	            	} else {
+	            		output = outputEventString(event.f0);
+	            		System.out.println("NON-JOINED EVENT " + output);
+	            	}
 	            	output = outputEventString(event.f0) + "," + outputCantramaString(cantrama.f0);
 	            	return output;
 	            }
@@ -130,7 +130,7 @@ public class StreamingJob {
         		.keyBy(value -> value.f1)
 		        .window(GlobalWindows.create())
 		        .trigger(new TramoTrigger())
-		        .process(new MyProcessWindowFunction());
+		        .process(new TramoCalculationFunction());
         
 	  tramoStream
 	 .map(new MapFunction<Tuple7<String, String, Timestamp, Timestamp, Double, Double, HashMap<String, Double>>, Object>() {
